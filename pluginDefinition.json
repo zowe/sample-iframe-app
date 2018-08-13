@@ -1,0 +1,25 @@
+{
+  "identifier": "com.rs.sample-iframe-app",
+  "apiVersion": "1.0.0",
+  "pluginVersion": "0.9.0",
+  "pluginType": "application",
+  "webContent": {
+    "framework": "iframe",
+    "launchDefinition": {
+      "pluginShortNameKey": "sampleiframe",
+      "pluginShortNameDefault": "IFrame",
+      "imageSrc": "assets/icon.png"
+    },
+    "descriptionKey": "Sample App Showcasing IFrame Adapter",
+    "descriptionDefault": "Sample App Showcasing IFrame Adapter",
+    "startingPage": "html/index.html",
+    "isSingleWindowApp": true,
+    "defaultWindowStyle": {
+      "width": 800,
+      "height": 420,
+      "x": 200,
+      "y": 50
+    }
+  },
+  "dataServices": []
+}
