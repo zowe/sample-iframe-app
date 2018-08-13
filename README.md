@@ -13,7 +13,7 @@ Content within an IFrame interacts with content in a webpage differently than co
 
 This app presents a few fields which allow you to launch another App, or communicate with an already open App instance, in both cases with some context that the other App may interpret and some action.
 
-**Note: This App intentionally does not follow the typical dev layout of directories and content described in [the wiki](https://github.com/gizafoundation/zlux/wiki/ZLUX-App-filesystem-structure) in order to demonstrate that you can include content within the ZLUX framework that was not intended for ZLUX originally.**
+**Note: This App intentionally does not follow the typical dev layout of directories and content described in [the wiki](https://github.com/zowe/zlux/wiki/ZLUX-App-filesystem-structure) in order to demonstrate that you can include content within the ZLUX framework that was not intended for ZLUX originally.**
 
 
 This program and the accompanying materials are
