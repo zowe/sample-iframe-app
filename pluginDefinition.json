@@ -1,13 +1,13 @@
 {
-  "identifier": "com.rs.sample-iframe-app",
+  "identifier": "org.zowe.zlux.sample.iframe",
   "apiVersion": "1.0.0",
-  "pluginVersion": "0.9.0",
+  "pluginVersion": "1.0.0",
   "pluginType": "application",
   "webContent": {
     "framework": "iframe",
     "launchDefinition": {
       "pluginShortNameKey": "sampleiframe",
-      "pluginShortNameDefault": "IFrame",
+      "pluginShortNameDefault": "IFrame Sample",
       "imageSrc": "assets/icon.png"
     },
     "descriptionKey": "Sample App Showcasing IFrame Adapter",
@@ -16,10 +16,17 @@
     "isSingleWindowApp": true,
     "defaultWindowStyle": {
       "width": 800,
-      "height": 420,
+      "height": 450,
       "x": 200,
       "y": 50
     }
   },
-  "dataServices": []
+  "dataServices": [
+    {
+      "type": "import",
+      "sourcePlugin": "org.zowe.zlux.sample.angular",
+      "sourceName": "hello",
+      "localName": "hello"
+    }
+  ]
 }
