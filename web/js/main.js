@@ -34,17 +34,17 @@ function sendAppRequest() {
     let statusElement = document.getElementById('status');
     let message = '';
     /* JS within an iframe can reference objects of the page it is embedded in via window.parent.
-       With ZLUX, there's a global called RocketMVD which holds useful tools. So, a site
+       With ZLUX, there's a global called ZoweZLUX which holds useful tools. So, a site
        Can determine what actions to take by knowing if it is or isnt embedded in ZLUX via IFrame.
     */
     let mvdWindow = window.parent;
-    if (mvdWindow && mvdWindow.RocketMVD) {
+    if (mvdWindow && mvdWindow.ZoweZLUX) {
       console.log((message = 'IFrame is within MVD'));
       /* PluginManager can be used to find what Plugins (Apps are a type of Plugin) are part of the current ZLUX instance.
          Once you know that the App you want is present, you can execute Actions on it by using the Dispatcher.
       */
-      let dispatcher = mvdWindow.RocketMVD.dispatcher;
-      let pluginManager = mvdWindow.RocketMVD.PluginManager;
+      let dispatcher = mvdWindow.ZoweZLUX.dispatcher;
+      let pluginManager = mvdWindow.ZoweZLUX.pluginManager;
       let plugin = pluginManager.getPlugin(appId);
       if (plugin) {
         let actionTypes = document.getElementsByName('actionType');
