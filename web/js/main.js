@@ -20,6 +20,91 @@ if (mvdWindow) {
   ZoweZLUX = mvdWindow.ZoweZLUX;
 }
 
+const MY_PLUGIN_ID = 'org.zowe.zlux.sample.iframe';
+
+
+function SettingsService() {
+  this.plugin = null;
+}
+
+SettingsService.prototype.setPlugin = function(plugin) {
+  this.plugin = plugin;
+}
+
+SettingsService.prototype.getDefaultsFromServer = function(successCallback, errorCallback) {
+  let xhr = new XMLHttpRequest();
+  let uri = ZoweZLUX.uriBroker.pluginConfigUri(this.plugin, 'requests/app', undefined);
+  xhr.open('GET', uri);
+  xhr.onreadystatechange = function() {
+    if (this.readyState == XMLHttpRequest.DONE) {
+      if (this.status == 200) {
+        successCallback(xhr.responseText);
+      } else {
+        errorCallback(xhr.responseText);
+      }
+    }
+  }
+  xhr.onerror = function(e) {
+    errorCallback(e);
+  }
+  xhr.send();
+}
+
+SettingsService.prototype.saveAppRequest = function(actionType, targetMode, parameters, successCallback, errorCallback) {
+  let xhr = new XMLHttpRequest();
+  let uri = ZoweZLUX.uriBroker.pluginConfigUri(this.plugin, 'requests/app', 'parameters');  
+  xhr.open('PUT', uri, true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.onreadystatechange = function() {
+    if (this.readyState == XMLHttpRequest.DONE) {
+      console.log(`Saved parameters with HTTP status=${this.status}`);
+      if (this.status == 200 || this.status == 201) {
+        successCallback(xhr.responseText);
+      } else {
+        errorCallback(xhr.responseText);
+      }
+    }
+  }
+  xhr.onerror = function(e) {
+    errorCallback(e);
+  }
+
+  xhr.send(JSON.stringify({
+    "_objectType": "org.zowe.zlux.sample.setting.request.app.parameters",
+    "_metaDataVersion": "1.0.0",
+    "actionType": actionType,
+    "targetMode": targetMode,
+    "parameters": parameters    
+  }));
+
+}
+
+SettingsService.prototype.saveAppId = function(appId, successCallback, errorCallback) {
+  let xhr = new XMLHttpRequest();
+  let uri = ZoweZLUX.uriBroker.pluginConfigUri(this.plugin, 'requests/app', 'appid');
+  xhr.open('PUT', uri, true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.onreadystatechange = function() {
+    if (this.readyState == XMLHttpRequest.DONE) {
+      console.log(`Saved App ID with HTTP status=${this.status}`);
+      if (this.status == 200 || this.status == 201) {
+        successCallback(xhr.responseText);
+      } else {
+        errorCallback(xhr.responseText);
+      }
+    }
+  }
+  xhr.onerror = function(e) {
+    errorCallback(e);
+  }
+
+  xhr.send(JSON.stringify({
+    "_objectType": "org.zowe.zlux.sample.setting.request.app.appid",
+    "_metaDataVersion": "1.0.0",
+    "appId": appId
+  }));
+
+}
 
 function HelloService() {
   this.path = null;
@@ -46,12 +131,92 @@ HelloService.prototype.sayHello = function(text, destination, callback) {
 }
 
 var helloService = new HelloService();
+var settingsService = new SettingsService();
+if (ZoweZLUX) {
+  settingsService.setPlugin(ZoweZLUX.pluginManager.getPlugin(MY_PLUGIN_ID));
+}
+
+function getDefaultsFromServer() {
+  if (ZoweZLUX) {
+    console.log('IFrame is within MVD');
+    settingsService.getDefaultsFromServer((resText)=> {
+      try {
+        let responseJson = JSON.parse(resText);
+        console.log(`JSON=${JSON.stringify(responseJson)}`);
+        if (responseJson.contents.appid && responseJson.contents.parameters) {
+          let paramData = responseJson.contents.parameters.data;
+          document.getElementById('parameters').value = paramData.parameters;
+
+          let targetModes = document.getElementsByName('targetMode');
+          for (let i =0; i < targetModes.length; i++) {
+            if (targetModes[i].value == paramData.appTarget) {
+              targetModes[i].checked = true;
+              break;
+            }
+          }
+
+          let actionTypes = document.getElementsByName('actionType');
+          for (let i =0; i < actionTypes.length; i++) {
+            if (actionTypes[i].value == paramData.actionType) {
+              actionTypes[i].checked = true;
+              break;
+            }
+          }
+
+          document.getElementById('appId').value = responseJson.contents.appid.data.appId;
+        } else {
+          console.log(`Incomplete data. AppID or Parameters missing.`);
+        }
+      } catch (e) {
+        console.log(`Response was not JSON`);
+      }
+    }, (e)=> {
+      console.log(`Error on getting defaults, e=${e}`);
+      document.getElementById('status').innerHTML = 'Error getting defaults';
+    });
+  }
+};
+
+function saveToServer() {
+  if (ZoweZLUX) {
+    console.log('IFrame is within MVD');
+    let actionTypes = document.getElementsByName('actionType');
+    let type;
+    for (let i =0; i < actionTypes.length; i++) {
+      if (actionTypes[i].checked) {
+        type = ZoweZLUX.dispatcher.constants.ActionType[actionTypes[i].value];
+        break;
+      }
+    }
+
+    let targetModes = document.getElementsByName('targetMode');
+    let mode;
+    for (let i =0; i < targetModes.length; i++) {
+      if (targetModes[i].checked) {
+        mode = ZoweZLUX.dispatcher.constants.ActionTargetMode[targetModes[i].value];
+        break;
+      }
+    }
+
+    settingsService.saveAppRequest(type, mode, document.getElementById('parameters').value, (resText)=> {
+      settingsService.saveAppId(document.getElementById('appId').value, (resText)=> {
+        console.log('Completed saving app request data');
+      }, (e) => {
+        console.log(`Error on saving App ID, e=${e}`);
+        document.getElementById('status').innerHTML = 'Error saving App ID';
+      });
+    }, (e)=> {
+      console.log(`Error on saving parameters, e=${e}`);
+      document.getElementById('status').innerHTML = 'Error saving parameters';
+    });
+  }
+};
 
 function sayHello() {
   if (ZoweZLUX) {
     console.log('IFrame is within MVD');
-    let myPluginDef = mvdWindow.ZoweZLUX.pluginManager.getPlugin('org.zowe.zlux.sample.iframe');
-    let url = mvdWindow.ZoweZLUX.uriBroker.pluginRESTUri(myPluginDef, 'hello', null);
+    let myPluginDef = ZoweZLUX.pluginManager.getPlugin(MY_PLUGIN_ID);
+    let url = ZoweZLUX.uriBroker.pluginRESTUri(myPluginDef, 'hello', null);
     helloService.sayHello(document.getElementById('helloText').value, url, (resText) => {
     try {
       const responseJson = JSON.parse(resText);
@@ -100,8 +265,8 @@ function sendAppRequest() {
       /* PluginManager can be used to find what Plugins (Apps are a type of Plugin) are part of the current ZLUX instance.
          Once you know that the App you want is present, you can execute Actions on it by using the Dispatcher.
       */
-      let dispatcher = mvdWindow.ZoweZLUX.dispatcher;
-      let pluginManager = mvdWindow.ZoweZLUX.pluginManager;
+      let dispatcher = ZoweZLUX.dispatcher;
+      let pluginManager = ZoweZLUX.pluginManager;
       let plugin = pluginManager.getPlugin(appId);
       if (plugin) {
         let actionTypes = document.getElementsByName('actionType');
