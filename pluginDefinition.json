@@ -26,7 +26,8 @@
       "type": "import",
       "sourcePlugin": "org.zowe.zlux.sample.angular",
       "sourceName": "hello",
-      "localName": "hello"
+      "localName": "hello",
+      "versionRange": "^1.0.0"
     }
   ],
   "configurationData": {
