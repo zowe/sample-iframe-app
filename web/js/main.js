@@ -132,6 +132,7 @@ HelloService.prototype.sayHello = function(text, destination, callback) {
 
 var helloService = new HelloService();
 var settingsService = new SettingsService();
+
 if (ZoweZLUX) {
   settingsService.setPlugin(ZoweZLUX.pluginManager.getPlugin(MY_PLUGIN_ID));
 }
@@ -296,6 +297,7 @@ function sendAppRequest() {
 
         if (type != undefined && mode != undefined) {
           let actionTitle = 'Launch app from sample app';
+          let targetId = parseInt(document.getElementById('targetId').value);
           let actionID = 'org.zowe.zlux.sample.launch';
           let argumentFormatter = {data: {op:'deref',source:'event',path:['data']}};
           /*Actions can be made ahead of time, stored and registered at startup, but for example purposes we are making one on-the-fly.
@@ -307,7 +309,7 @@ function sendAppRequest() {
           statusElement.innerHTML = message;
           /*Just because the Action is invoked does not mean the target App will accept it. We've made an Action on the fly,
             So the data could be in any shape under the "data" attribute and it is up to the target App to take action or ignore this request*/
-          dispatcher.invokeAction(action,argumentData);
+          dispatcher.invokeAction(action,argumentData, targetId);
         } else {
           console.log((message = 'Invalid target mode or action type specified'));        
         }
@@ -319,8 +321,45 @@ function sendAppRequest() {
   }
 }
 
+function showHideTargetId() {
+      let actionTypes = document.getElementsByName('actionType');
+      let type;
+      for (let i =0; i < actionTypes.length; i++) {
+        if (actionTypes[i].checked) {
+          type = dispatcher.constants.ActionType[actionTypes[i].value];
+          break;
+        }
+      }
+      if (type === 'Maximize' || type === 'Minimize') {
+        document.getElementById('targetId').style.display = 'block';
+      } else {
+        document.getElementById('targetId').style.display = 'none';
+      }
+
+}
+
 window.addEventListener("load", function () {
   console.log('Sample iframe app has loaded');
+
+let actionRadioButtons = document.getElementsByName('actionType');
+for (let i =0; i < actionRadioButtons.length; i++) {
+  actionRadioButtons[i].addEventListener('change', function() {
+    let actionTypes = document.getElementsByName('actionType');
+    let type;
+    for (let i =0; i < actionTypes.length; i++) {
+      if (actionTypes[i].checked) {
+        type = actionTypes[i].value;
+        break;
+      }
+    }
+    console.log(`HERE ${type}`);
+    if (type === 'Maximize' || type === 'Minimize') {
+      document.getElementById('targetId-wrapper').style.display = 'block';
+    } else {
+      document.getElementById('targetId-wrapper').style.display = 'none';
+    }
+  })
+}
 }, false);
 
 
