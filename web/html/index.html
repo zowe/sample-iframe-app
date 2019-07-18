@@ -34,41 +34,47 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       <span class="bold-text">Application Identifier: </span>
       <div>
         <div class="div-input">
-          <input class="iframe-input input-height input-corner input-text shadowed" type="text" name="appId" id="appId" placeholder="app identifier" value="org.zowe.terminal.tn3270"/>
+          <select class="iframe-input input-height input-corner input-text shadowed" name="appId" id="appId">
+             <option>Select an App ID</option>
+          </select>
         </div>
+        <label class="bold-text">Target ID:</label>
+        <div class="div-input">
+            
+            <input type="number" value="1" name="targetId" id="targetId" class="iframe-input input-height input-corner input-text shadowed"/>
+          </div>
         <div>
           <!-- Action types are used to determine what sort of Action is being taken on whatever App instance is the target. Launch simply creates a new instance with the context you provide, but Message can be used to communicate with an already open Instance to drive some action -->
           <label class="bold-text">Action Type: </label>
           <input type="radio" id="actionLaunch"
-                 name="actionType" value="Launch" checked>
+                 name="actionType" value="Launch" onclick="toggleInputDisability()" checked >
           <label for="actionLaunch">Launch</label>
 
           <input type="radio" id="actionMessage"
-                 name="actionType" value="Message">
+                 name="actionType" value="Message" onclick="toggleInputDisability()" >
           <label for="actionMessage">Message</label>
           <input type="radio" id="actionLaunch"
-                 name="actionType" value="Maximize" checked>
+                 name="actionType" value="Maximize" onclick="toggleInputDisability()" >
           <label for="actionLaunch">Maximize</label>
 
           <input type="radio" id="actionMessage"
-                 name="actionType" value="Minimize">
+                 name="actionType" value="Minimize" onclick="toggleInputDisability()" >
           <label for="actionMessage">Minimize</label>
         </div>
         <!-- App target modes are used to determine which instance of an App should be communicated with. You can create a new instance to send the Action to, or you could reuse an existing instance that is open. -->
         <div>
           <label class="bold-text">App Target Mode: </label>
           <input type="radio" id="targetCreate"
-                 name="targetMode" value="PluginCreate" checked>
+                 name="targetMode" value="PluginCreate" onclick="toggleInputDisability()" checked>
           <label for="targetCreate">Create New</label>
 
           <input type="radio" id="targetReuse"
-                 name="targetMode" value="PluginFindAnyOrCreate">
+                 name="targetMode" value="PluginFindAnyOrCreate" onclick="toggleInputDisability()" >
           <label for="targetReuse">Reuse Any Open</label>
-
-          <div id="targetId-wrapper">
-            <label>Target ID</label>
-            <input type="number" value="1" name="targetId" id="targetId"/>
-          </div>
+          
+          <input type="radio" id="targetSpecify"
+                 name="targetMode" value="PluginSpecifyTargetID" onclick="toggleInputDisability()"  >
+          <label for="targetReuse">Specify Target ID</label>
         </div>      
         <span class="bold-text hide-it">Target App Window Title (this will become the title for the target window)</span>
         <div class="div-input hide-it">

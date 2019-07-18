@@ -20,6 +20,8 @@ if (mvdWindow) {
   ZoweZLUX = mvdWindow.ZoweZLUX;
 }
 
+let appIdOptions = []
+
 const MY_PLUGIN_ID = 'org.zowe.zlux.sample.iframe';
 
 
@@ -253,6 +255,13 @@ function sayHello() {
 // by the button labelled "Send App Request"
 
 function sendAppRequest() {
+  
+  let dropdown = document.getElementById("appId");
+  let targetIdInput = document.getElementById("targetId");
+  if (dropdown.disabled && targetIdInput.disabled) {
+     return;
+  }
+  
   var requestText = document.getElementById('parameters').value;
   var parameters = null;
   /*Parameters for Actions could be a number, string, or object. The actual event context of an Action that an App recieves will be an object with attributes filled in via these parameters*/
@@ -320,6 +329,38 @@ function sendAppRequest() {
     statusElement.innerHTML = message;
   }
 }
+function toggleInputDisability() {
+    let actionTypes = document.getElementsByName('actionType');
+    let type;
+    for (let i =0; i < actionTypes.length; i++) {
+      if (actionTypes[i].checked) {
+        type = actionTypes[i].value;
+        break;
+      }
+    }
+    let mode;
+    let targetModes = document.getElementsByName('targetMode');
+    for (let i =0; i < targetModes.length; i++) {
+      if (targetModes[i].checked) {
+        mode =  targetModes[i].value;
+        break;
+      }
+    }
+  let dropdown = document.getElementById("appId");
+  let targetIdInput = document.getElementById("targetId");
+  if (mode === 'PluginCreate' || mode === 'PluginFindAnyOrCreate' || type === 'Launch' || type === 'Message') {
+    targetIdInput.disabled = true;
+  } else {
+    targetIdInput.disabled = false;
+  }
+
+  if (mode === 'PluginSpecifyTargetId' || type === 'Maximize' || type === 'Minimize') {
+    dropdown.disabled = true;
+  } else {
+    dropdown.disabled = false;
+  }
+
+}
 
 function showHideTargetId() {
       let actionTypes = document.getElementsByName('actionType');
@@ -340,29 +381,45 @@ function showHideTargetId() {
 
 window.addEventListener("load", function () {
   console.log('Sample iframe app has loaded');
-
-let actionRadioButtons = document.getElementsByName('actionType');
-for (let i =0; i < actionRadioButtons.length; i++) {
-  actionRadioButtons[i].addEventListener('change', function() {
-    let actionTypes = document.getElementsByName('actionType');
-    let type;
-    for (let i =0; i < actionTypes.length; i++) {
-      if (actionTypes[i].checked) {
-        type = actionTypes[i].value;
-        break;
-      }
-    }
-    console.log(`HERE ${type}`);
-    if (type === 'Maximize' || type === 'Minimize') {
-      document.getElementById('targetId-wrapper').style.display = 'block';
-    } else {
-      document.getElementById('targetId-wrapper').style.display = 'none';
-    }
-  })
-}
+  toggleInputDisability();
+    fetch('/plugins?type=all')
+      .then((res) => res.json())
+      .then((pluginData) => {
+        console.log("ehllo");
+        const pluginDefinitions = pluginData.pluginDefinitions;
+        console.log(pluginData);
+        for (const plugin of pluginDefinitions) {
+         if (plugin.identifier) {
+            if (plugin.webContent) {
+              if (plugin.webContent.launchDefinition) {
+               appIdOptions.push({
+                 description: `${plugin.webContent.launchDefinition.pluginShortNameDefault} - ${plugin.identifier}`,
+                 value: plugin.identifier,
+               });
+            } else {
+              appIdOptions.push({
+                description: plugin.identifier,
+                value: plugin.identifier,
+              });
+            }
+          }
+         }
+        }
+      }).then(() => {
+        console.log(appIdOptions);
+      let select = document.getElementById("appId"); 
+      for(let i = 0; i < appIdOptions.length; i++) {
+          let opt = appIdOptions[i];
+          let el = document.createElement("option");
+          el.textContent = opt.description;
+          el.value = opt.value;
+          select.add(el);
+    } });
 }, false);
 
-
+// class ApplicationIdentifierOption {
+//    constructor(public description: string, public value: string) {}
+// }
 /*
   This program and the accompanying materials are
   made available under the terms of the Eclipse Public License v2.0 which accompanies
