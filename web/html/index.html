@@ -91,12 +91,12 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
         <span class="bigger-bold-text">Dataservice Request Test</span>
       </div>
       <div>
-        <input placeholder="Message" name="helloText" id="helloText"/>
-        <button onclick="sayHello()">Run</button>
+        <input placeholder="Message" name="helloText" id="helloText" oninput="inputChanged()"/>
+        <button id="runButton" onclick="sayHello()" disabled>Run</button>
       </div>
       <div>
         <label>Response</label>
-        <textarea class="server-response" placeholder="Response" name="serverResponseMessage" id="serverResponseMessage"></textarea>
+        <textarea readonly class="server-response" placeholder="Response" name="serverResponseMessage" id="serverResponseMessage"></textarea>
       </div>
     </div>    
   </body>
