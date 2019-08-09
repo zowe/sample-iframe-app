@@ -212,6 +212,14 @@ function saveToServer() {
   }
 };
 
+function inputChanged() {
+  if(document.getElementById('helloText').value) {
+    document.getElementById('runButton').disabled = false;
+  } else {
+    document.getElementById('runButton').disabled = true;
+  }
+}
+
 function sayHello() {
   if (ZoweZLUX) {
     console.log('IFrame is within MVD');
@@ -239,7 +247,6 @@ function sayHello() {
     console.log((serverResponseMessage.innerHTML = "Not inside of Zowe, and not sure how to contact dataservice"));
   }
 }
-
 
 // Tests the sending of requests to other plugins. Invoked
 // by the button labelled "Send App Request"
