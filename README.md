@@ -15,6 +15,8 @@ This app presents a few fields which allow you to launch another App, or communi
 
 **Note: This App requires the [Sample Angular App](https://github.com/zowe/sample-angular-app) to be installed.**
 
+**To request features or report bugs, please use the issues page at the [zlux repo](https://github.com/zowe/zlux/issues) with the sample-app or app tags**
+
 **Note: This App intentionally does not follow the typical dev layout of directories and content described in [the wiki](https://github.com/zowe/zlux/wiki/ZLUX-App-filesystem-structure) in order to demonstrate that you can include content within the ZLUX framework that was not intended for ZLUX originally.**
 
 
