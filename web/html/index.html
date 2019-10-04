@@ -19,6 +19,18 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/iframe.css">
+    <script type="text/javascript" src="../../../org.zowe.zlux.bootstrap/web/iframe-adapter.js"></script>
+    <script>
+      ZoweZLUX.notificationManager.addMessageHandler('this');
+      function handleMessageAdded(message){
+          notifications.unshift(message);
+          console.log('IFRAME NOTIFICATIONS:', notifications);
+      }
+      function handleMessageRemoved(id) {
+          notifications.splice(this.notifications.findIndex(x => x.id === id), 1);
+          console.log('IFRAME NOTIFICATIONS:', notifications);
+      }
+    </script>
     <script type="text/javascript" src="../js/main.js"></script>
   </head>
   <body class="iframe-font test-panel-container">
@@ -30,6 +42,8 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
         <button class="iframe-button shadowed" type="button" onclick="sendAppRequest()">Send App Request</button>
         <button class="iframe-button shadowed" type="button" onclick="getDefaultsFromServer()">Get from Server</button>
         <button class="iframe-button shadowed" type="button" onclick="saveToServer()">Save to Server</button>
+        <button class="iframe-button shadowed" type="button" onclick="translateFunction('ZoweZLUX.globalization.getLocale', [])">translateFunctionCall</button>
+        <button class="iframe-button shadowed" type="button" onclick="ZoweZLUX.notificationManager.notify(ZoweZLUX.notificationManager.createNotification('from gandhi', 'waddup yandhi', 1, 't.e.s.t'))">Waddup yandhi</button>
       </div>
       <span class="bold-text">Application Identifier: </span>
       <div>
