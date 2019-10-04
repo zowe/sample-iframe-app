@@ -20,6 +20,8 @@ if (mvdWindow) {
   ZoweZLUX = mvdWindow.ZoweZLUX;
 }
 
+let appIdOptions = []
+
 const MY_PLUGIN_ID = 'org.zowe.zlux.sample.iframe';
 
 
@@ -132,6 +134,7 @@ HelloService.prototype.sayHello = function(text, destination, callback) {
 
 var helloService = new HelloService();
 var settingsService = new SettingsService();
+
 if (ZoweZLUX) {
   settingsService.setPlugin(ZoweZLUX.pluginManager.getPlugin(MY_PLUGIN_ID));
 }
@@ -252,6 +255,13 @@ function sayHello() {
 // by the button labelled "Send App Request"
 
 function sendAppRequest() {
+  
+  let dropdown = document.getElementById("appId");
+  let targetIdInput = document.getElementById("targetId");
+  if (dropdown.disabled && targetIdInput.disabled) {
+     return;
+  }
+  
   var requestText = document.getElementById('parameters').value;
   var parameters = null;
   /*Parameters for Actions could be a number, string, or object. The actual event context of an Action that an App recieves will be an object with attributes filled in via these parameters*/
@@ -296,6 +306,7 @@ function sendAppRequest() {
 
         if (type != undefined && mode != undefined) {
           let actionTitle = 'Launch app from sample app';
+          let targetId = parseInt(document.getElementById('targetId').value);
           let actionID = 'org.zowe.zlux.sample.launch';
           let argumentFormatter = {data: {op:'deref',source:'event',path:['data']}};
           /*Actions can be made ahead of time, stored and registered at startup, but for example purposes we are making one on-the-fly.
@@ -307,7 +318,7 @@ function sendAppRequest() {
           statusElement.innerHTML = message;
           /*Just because the Action is invoked does not mean the target App will accept it. We've made an Action on the fly,
             So the data could be in any shape under the "data" attribute and it is up to the target App to take action or ignore this request*/
-          dispatcher.invokeAction(action,argumentData);
+          dispatcher.invokeAction(action,argumentData, targetId);
         } else {
           console.log((message = 'Invalid target mode or action type specified'));        
         }
@@ -318,12 +329,97 @@ function sendAppRequest() {
     statusElement.innerHTML = message;
   }
 }
+function toggleInputDisability() {
+    let actionTypes = document.getElementsByName('actionType');
+    let type;
+    for (let i =0; i < actionTypes.length; i++) {
+      if (actionTypes[i].checked) {
+        type = actionTypes[i].value;
+        break;
+      }
+    }
+    let mode;
+    let targetModes = document.getElementsByName('targetMode');
+    for (let i =0; i < targetModes.length; i++) {
+      if (targetModes[i].checked) {
+        mode =  targetModes[i].value;
+        break;
+      }
+    }
+  let dropdown = document.getElementById("appId");
+  let targetIdInput = document.getElementById("targetId");
+  if (mode === 'PluginCreate' || mode === 'PluginFindAnyOrCreate' || type === 'Launch' || type === 'Message') {
+    targetIdInput.disabled = true;
+  } else {
+    targetIdInput.disabled = false;
+  }
+
+  if (mode === 'PluginSpecifyTargetId' || type === 'Maximize' || type === 'Minimize') {
+    dropdown.disabled = true;
+  } else {
+    dropdown.disabled = false;
+  }
+
+}
+
+function showHideTargetId() {
+      let actionTypes = document.getElementsByName('actionType');
+      let type;
+      for (let i =0; i < actionTypes.length; i++) {
+        if (actionTypes[i].checked) {
+          type = dispatcher.constants.ActionType[actionTypes[i].value];
+          break;
+        }
+      }
+      if (type === 'Maximize' || type === 'Minimize') {
+        document.getElementById('targetId').style.display = 'block';
+      } else {
+        document.getElementById('targetId').style.display = 'none';
+      }
+
+}
 
 window.addEventListener("load", function () {
   console.log('Sample iframe app has loaded');
+  toggleInputDisability();
+    fetch('/plugins?type=all')
+      .then((res) => res.json())
+      .then((pluginData) => {
+        console.log("ehllo");
+        const pluginDefinitions = pluginData.pluginDefinitions;
+        console.log(pluginData);
+        for (const plugin of pluginDefinitions) {
+         if (plugin.identifier) {
+            if (plugin.webContent) {
+              if (plugin.webContent.launchDefinition) {
+               appIdOptions.push({
+                 description: `${plugin.webContent.launchDefinition.pluginShortNameDefault} - ${plugin.identifier}`,
+                 value: plugin.identifier,
+               });
+            } else {
+              appIdOptions.push({
+                description: plugin.identifier,
+                value: plugin.identifier,
+              });
+            }
+          }
+         }
+        }
+      }).then(() => {
+        console.log(appIdOptions);
+      let select = document.getElementById("appId"); 
+      for(let i = 0; i < appIdOptions.length; i++) {
+          let opt = appIdOptions[i];
+          let el = document.createElement("option");
+          el.textContent = opt.description;
+          el.value = opt.value;
+          select.add(el);
+    } });
 }, false);
 
-
+// class ApplicationIdentifierOption {
+//    constructor(public description: string, public value: string) {}
+// }
 /*
   This program and the accompanying materials are
   made available under the terms of the Eclipse Public License v2.0 which accompanies
