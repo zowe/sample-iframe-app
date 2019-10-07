@@ -20,16 +20,42 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/iframe.css">
     <script type="text/javascript" src="../../../org.zowe.zlux.bootstrap/web/iframe-adapter.js"></script>
+    <!-- UNIT TEST FOR NOTIFIACTION MANAGER -->
     <script>
-      ZoweZLUX.notificationManager.addMessageHandler('this');
-      function handleMessageAdded(message){
+        let notifications = [];
+        function handleMessageAdded(message){
           notifications.unshift(message);
-          console.log('IFRAME NOTIFICATIONS:', notifications);
-      }
-      function handleMessageRemoved(id) {
-          notifications.splice(this.notifications.findIndex(x => x.id === id), 1);
-          console.log('IFRAME NOTIFICATIONS:', notifications);
-      }
+          console.log('IFRAME NOTIFICATION ADD HANDLER:', notifications);
+        }
+        function handleMessageRemoved(id) {
+          notifications.splice(notifications.findIndex(x => x.id === id), 1);
+          console.log('IFRAME NOTIFICATION REMOVE HANDLER:', notifications);
+        }
+        function assertParam(param, testNum){
+          if(param === false){
+            console.warn('ASSERT FAILED: ', testNum)
+          } else {
+            console.log(`Assert ${testNum}: passed`);
+          }
+        }
+        async function test(){
+          await ZoweZLUX.notificationManager.addMessageHandler('this');
+          let testNotification = await ZoweZLUX.notificationManager.createNotification('from gandhi', 'waddup yandhi', 1, 't.e.s.t')
+          ZoweZLUX.notificationManager.notify(testNotification);
+          assertParam(notifications.length === 1, 0);
+          ZoweZLUX.notificationManager.notify(testNotification);
+          assertParam(notifications.length === 2, 1);
+          ZoweZLUX.notificationManager.notify(testNotification);
+          ZoweZLUX.notificationManager.notify(testNotification);
+          assertParam(notifications.length === 4, 2);
+          let notificationIDs = notifications.map(elem => { return elem.id});
+          notificationIDs.forEach((id) => {
+            let oldLen = notifications.length;
+            ZoweZLUX.notificationManager.dismissNotification(id);
+            assertParam(notifications.length === oldLen - 1, 3);
+          })
+        }
+        test();
     </script>
     <script type="text/javascript" src="../js/main.js"></script>
   </head>
@@ -44,6 +70,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
         <button class="iframe-button shadowed" type="button" onclick="saveToServer()">Save to Server</button>
         <button class="iframe-button shadowed" type="button" onclick="translateFunction('ZoweZLUX.globalization.getLocale', [])">translateFunctionCall</button>
         <button class="iframe-button shadowed" type="button" onclick="ZoweZLUX.notificationManager.notify(ZoweZLUX.notificationManager.createNotification('from gandhi', 'waddup yandhi', 1, 't.e.s.t'))">Waddup yandhi</button>
+        <button class="iframe-button shadowed" type="button" onclick="console.log(notifications.length)">Log notification len</button>
       </div>
       <span class="bold-text">Application Identifier: </span>
       <div>
