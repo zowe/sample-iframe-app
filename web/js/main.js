@@ -31,9 +31,9 @@ SettingsService.prototype.setPlugin = function(plugin) {
   this.plugin = plugin;
 }
 
-SettingsService.prototype.getDefaultsFromServer = function(successCallback, errorCallback) {
+SettingsService.prototype.getDefaultsFromServer = async function(successCallback, errorCallback) {
   let xhr = new XMLHttpRequest();
-  let uri = ZoweZLUX.uriBroker.pluginConfigUri(this.plugin, 'requests/app', undefined);
+  let uri = await ZoweZLUX.uriBroker.pluginConfigUri(this.plugin, 'requests/app', undefined);
   xhr.open('GET', uri);
   xhr.onreadystatechange = function() {
     if (this.readyState == XMLHttpRequest.DONE) {
@@ -50,9 +50,9 @@ SettingsService.prototype.getDefaultsFromServer = function(successCallback, erro
   xhr.send();
 }
 
-SettingsService.prototype.saveAppRequest = function(actionType, targetMode, parameters, successCallback, errorCallback) {
+SettingsService.prototype.saveAppRequest = async function(actionType, targetMode, parameters, successCallback, errorCallback) {
   let xhr = new XMLHttpRequest();
-  let uri = ZoweZLUX.uriBroker.pluginConfigUri(this.plugin, 'requests/app', 'parameters');  
+  let uri = await ZoweZLUX.uriBroker.pluginConfigUri(this.plugin, 'requests/app', 'parameters');  
   xhr.open('PUT', uri, true);
   xhr.setRequestHeader('Content-Type', 'application/json');
   xhr.onreadystatechange = function() {
@@ -79,9 +79,9 @@ SettingsService.prototype.saveAppRequest = function(actionType, targetMode, para
 
 }
 
-SettingsService.prototype.saveAppId = function(appId, successCallback, errorCallback) {
+SettingsService.prototype.saveAppId = async function(appId, successCallback, errorCallback) {
   let xhr = new XMLHttpRequest();
-  let uri = ZoweZLUX.uriBroker.pluginConfigUri(this.plugin, 'requests/app', 'appid');
+  let uri = await ZoweZLUX.uriBroker.pluginConfigUri(this.plugin, 'requests/app', 'appid');
   xhr.open('PUT', uri, true);
   xhr.setRequestHeader('Content-Type', 'application/json');
   xhr.onreadystatechange = function() {
@@ -133,7 +133,7 @@ HelloService.prototype.sayHello = function(text, destination, callback) {
 var helloService = new HelloService();
 var settingsService = new SettingsService();
 if (ZoweZLUX) {
-  ZoweZLUX.pluginManager.getPlugin(MY_PLUGIN_ID).then((res) => {
+  ZoweZLUX.pluginManager.getPlugin(MY_PLUGIN_ID).then(res => {
     settingsService.setPlugin(res);
   })
 }
@@ -222,11 +222,11 @@ function inputChanged() {
   }
 }
 
-function sayHello() {
+async function sayHello() {
   if (ZoweZLUX) {
     console.log('IFrame is within MVD');
-    let myPluginDef = ZoweZLUX.pluginManager.getPlugin(MY_PLUGIN_ID);
-    let url = ZoweZLUX.uriBroker.pluginRESTUri(myPluginDef, 'hello', null);
+    let myPluginDef = await ZoweZLUX.pluginManager.getPlugin(MY_PLUGIN_ID);
+    let url = await ZoweZLUX.uriBroker.pluginRESTUri(myPluginDef, 'hello', null);
     helloService.sayHello(document.getElementById('helloText').value, url, (resText) => {
     try {
       const responseJson = JSON.parse(resText);
@@ -253,7 +253,7 @@ function sayHello() {
 // Tests the sending of requests to other plugins. Invoked
 // by the button labelled "Send App Request"
 
-function sendAppRequest() {
+async function sendAppRequest() {
   var requestText = document.getElementById('parameters').value;
   var parameters = null;
   /*Parameters for Actions could be a number, string, or object. The actual event context of an Action that an App recieves will be an object with attributes filled in via these parameters*/
@@ -276,13 +276,13 @@ function sendAppRequest() {
       */
       let dispatcher = ZoweZLUX.dispatcher;
       let pluginManager = ZoweZLUX.pluginManager;
-      let plugin = ZoweZLUX.pluginManager.getPlugin(appId);
+      let plugin = await pluginManager.getPlugin(appId);
       if (plugin) {
         let actionTypes = document.getElementsByName('actionType');
         let type;
         for (let i =0; i < actionTypes.length; i++) {
           if (actionTypes[i].checked) {
-            type = ZoweZLUX.dispatcher.constants.ActionType[actionTypes[i].value];
+            type = dispatcher.constants.ActionType[actionTypes[i].value];
             break;
           }
         }
@@ -291,7 +291,7 @@ function sendAppRequest() {
         let mode;
         for (let i =0; i < targetModes.length; i++) {
           if (targetModes[i].checked) {
-            mode = ZoweZLUX.dispatcher.constants.ActionTargetMode[targetModes[i].value];
+            mode = dispatcher.constants.ActionTargetMode[targetModes[i].value];
             break;
           }
         }
@@ -303,15 +303,13 @@ function sendAppRequest() {
           /*Actions can be made ahead of time, stored and registered at startup, but for example purposes we are making one on-the-fly.
             Actions are also typically associated with Recognizers, which execute an Action when a certain pattern is seen in the running App.
           */
-          ZoweZLUX.dispatcher.makeAction(actionID, actionTitle, mode,type,appId,argumentFormatter).then((res) => {
-            let argumentData = {'data':(parameters ? parameters : requestText)};
-            ZoweZLUX.dispatcher.invokeAction(res,argumentData);
-            console.log((message = 'App request succeeded'));        
-            statusElement.innerHTML = message;
-          });
+          let action = await dispatcher.makeAction(actionID, actionTitle, mode,type,appId,argumentFormatter);
+          let argumentData = {'data':(parameters ? parameters : requestText)};
+          console.log((message = 'App request succeeded'));        
+          statusElement.innerHTML = message;
           /*Just because the Action is invoked does not mean the target App will accept it. We've made an Action on the fly,
             So the data could be in any shape under the "data" attribute and it is up to the target App to take action or ignore this request*/
-
+          dispatcher.invokeAction(action,argumentData);
         } else {
           console.log((message = 'Invalid target mode or action type specified'));        
         }
