@@ -41,19 +41,19 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
         async function test(){
           await ZoweZLUX.notificationManager.addMessageHandler('this');
           let testNotification = await ZoweZLUX.notificationManager.createNotification('from gandhi', 'waddup yandhi', 1, 't.e.s.t')
-          ZoweZLUX.notificationManager.notify(testNotification);
+          await ZoweZLUX.notificationManager.notify(testNotification);
           assertParam(notifications.length === 1, 0);
-          ZoweZLUX.notificationManager.notify(testNotification);
+          await ZoweZLUX.notificationManager.notify(testNotification);
           assertParam(notifications.length === 2, 1);
-          ZoweZLUX.notificationManager.notify(testNotification);
-          ZoweZLUX.notificationManager.notify(testNotification);
+          await ZoweZLUX.notificationManager.notify(testNotification);
+          await ZoweZLUX.notificationManager.notify(testNotification);
           assertParam(notifications.length === 4, 2);
           let notificationIDs = notifications.map(elem => { return elem.id});
-          notificationIDs.forEach((id) => {
+          for(let i = 0; i < notificationIDs.length; i++){
             let oldLen = notifications.length;
-            ZoweZLUX.notificationManager.dismissNotification(id);
+            await ZoweZLUX.notificationManager.dismissNotification(notificationIDs[i]);
             assertParam(notifications.length === oldLen - 1, 3);
-          })
+          }
         }
         test();
     </script>
