@@ -14,11 +14,11 @@
    With ZLUX, there's a global called ZoweZLUX which holds useful tools. So, a site
    Can determine what actions to take by knowing if it is or isnt embedded in ZLUX via IFrame.
 */
-var mvdWindow = window.parent;
-var ZoweZLUX = null;
-if (mvdWindow) {
-  ZoweZLUX = mvdWindow.ZoweZLUX;
-}
+// var mvdWindow = window.parent;
+// var ZoweZLUX = null;
+// if (mvdWindow) {
+//   ZoweZLUX = mvdWindow.ZoweZLUX;
+// }
 
 const MY_PLUGIN_ID = 'org.zowe.zlux.sample.iframe';
 
@@ -133,7 +133,9 @@ HelloService.prototype.sayHello = function(text, destination, callback) {
 var helloService = new HelloService();
 var settingsService = new SettingsService();
 if (ZoweZLUX) {
-  settingsService.setPlugin(ZoweZLUX.pluginManager.getPlugin(MY_PLUGIN_ID));
+  ZoweZLUX.pluginManager.getPlugin(MY_PLUGIN_ID).then((res) => {
+    settingsService.setPlugin(res);
+  })
 }
 
 function getDefaultsFromServer() {
@@ -274,13 +276,13 @@ function sendAppRequest() {
       */
       let dispatcher = ZoweZLUX.dispatcher;
       let pluginManager = ZoweZLUX.pluginManager;
-      let plugin = pluginManager.getPlugin(appId);
+      let plugin = ZoweZLUX.pluginManager.getPlugin(appId);
       if (plugin) {
         let actionTypes = document.getElementsByName('actionType');
         let type;
         for (let i =0; i < actionTypes.length; i++) {
           if (actionTypes[i].checked) {
-            type = dispatcher.constants.ActionType[actionTypes[i].value];
+            type = ZoweZLUX.dispatcher.constants.ActionType[actionTypes[i].value];
             break;
           }
         }
@@ -289,7 +291,7 @@ function sendAppRequest() {
         let mode;
         for (let i =0; i < targetModes.length; i++) {
           if (targetModes[i].checked) {
-            mode = dispatcher.constants.ActionTargetMode[targetModes[i].value];
+            mode = ZoweZLUX.dispatcher.constants.ActionTargetMode[targetModes[i].value];
             break;
           }
         }
@@ -301,13 +303,15 @@ function sendAppRequest() {
           /*Actions can be made ahead of time, stored and registered at startup, but for example purposes we are making one on-the-fly.
             Actions are also typically associated with Recognizers, which execute an Action when a certain pattern is seen in the running App.
           */
-          let action = dispatcher.makeAction(actionID, actionTitle, mode,type,appId,argumentFormatter);
-          let argumentData = {'data':(parameters ? parameters : requestText)};
-          console.log((message = 'App request succeeded'));        
-          statusElement.innerHTML = message;
+          ZoweZLUX.dispatcher.makeAction(actionID, actionTitle, mode,type,appId,argumentFormatter).then((res) => {
+            let argumentData = {'data':(parameters ? parameters : requestText)};
+            ZoweZLUX.dispatcher.invokeAction(res,argumentData);
+            console.log((message = 'App request succeeded'));        
+            statusElement.innerHTML = message;
+          });
           /*Just because the Action is invoked does not mean the target App will accept it. We've made an Action on the fly,
             So the data could be in any shape under the "data" attribute and it is up to the target App to take action or ignore this request*/
-          dispatcher.invokeAction(action,argumentData);
+
         } else {
           console.log((message = 'Invalid target mode or action type specified'));        
         }
