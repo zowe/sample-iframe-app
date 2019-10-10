@@ -27,34 +27,85 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
           notifications.unshift(message);
           console.log('IFRAME NOTIFICATION ADD HANDLER:', notifications);
         }
+
         function handleMessageRemoved(id) {
           notifications.splice(notifications.findIndex(x => x.id === id), 1);
           console.log('IFRAME NOTIFICATION REMOVE HANDLER:', notifications);
         }
+
         function assertParam(param, testNum){
           if(param === false){
             console.warn('ASSERT FAILED: ', testNum)
           } else {
-            console.log(`Assert ${testNum}: passed`);
+            console.log(`Assert passed: `, testNum);
           }
         }
-        async function test(){
-          await ZoweZLUX.notificationManager.addMessageHandler('this');
-          let testNotification = await ZoweZLUX.notificationManager.createNotification('from gandhi', 'waddup yandhi', 1, 't.e.s.t')
-          await ZoweZLUX.notificationManager.notify(testNotification);
-          assertParam(notifications.length === 1, 0);
-          await ZoweZLUX.notificationManager.notify(testNotification);
-          assertParam(notifications.length === 2, 1);
-          await ZoweZLUX.notificationManager.notify(testNotification);
-          await ZoweZLUX.notificationManager.notify(testNotification);
-          assertParam(notifications.length === 4, 2);
-          let notificationIDs = notifications.map(elem => { return elem.id});
-          for(let i = 0; i < notificationIDs.length; i++){
-            let oldLen = notifications.length;
-            await ZoweZLUX.notificationManager.dismissNotification(notificationIDs[i]);
-            assertParam(notifications.length === oldLen - 1, 3);
+
+        function assertEqual(testValue, expectedValue, testNum){
+          if(testValue === expectedValue){
+            console.log('Assert equal passed: ', testNum)
+          } else {
+            console.warn('ASSERT EQUAL FAILED: ', testNum, 'Test value: ' + testValue + ' | Expected value: ' + expectedValue);
           }
         }
+
+        function testZoweZLUXExists(){
+          assertParam(ZoweZLUX !== undefined, 2);
+        }
+        
+        async function testNotificationManager(){
+          ZoweZLUX.notificationManager.addMessageHandler('this').then(res => {
+            ZoweZLUX.notificationManager.createNotification('from gandhi', 'waddup yandhi', 1, 't.e.s.t').then(async function(testNotification) {
+              await ZoweZLUX.notificationManager.notify(testNotification)
+              await ZoweZLUX.notificationManager.notify(testNotification)
+              await ZoweZLUX.notificationManager.notify(testNotification)
+              await ZoweZLUX.notificationManager.notify(testNotification)
+              assertParam(notifications.length === 4, 0);
+              let notificationIDs = notifications.map(elem => { return elem.id});
+              for(let i = 0; i < notificationIDs.length; i++){
+                let oldLen = notifications.length;
+                await ZoweZLUX.notificationManager.dismissNotification(notificationIDs[i]);
+                assertParam(notifications.length === oldLen - 1, 1);
+              }
+            })
+          })
+        }
+
+        async function testGlobalization(){
+          let curLang = await ZoweZLUX.globalization.getLanguage();
+          await ZoweZLUX.globalization.setLanguage('en');
+          ZoweZLUX.globalization.getLanguage().then((res) => {
+            assertEqual(res, 'en', 3);
+          });
+          await ZoweZLUX.globalization.setLanguage('zh');
+          ZoweZLUX.globalization.getLanguage().then((res) => {
+            assertEqual(res, 'zh', 4);
+          });
+          await ZoweZLUX.globalization.setLanguage('fr');
+          ZoweZLUX.globalization.getLanguage().then((res) => {
+            assertEqual(res, 'fr', 5);
+          });
+          await ZoweZLUX.globalization.setLanguage('ja');
+          ZoweZLUX.globalization.getLanguage().then((res) => {
+            assertEqual(res, 'ja', 6);
+          });
+          await ZoweZLUX.globalization.setLanguage('ru');
+          ZoweZLUX.globalization.getLanguage().then((res) => {
+            assertEqual(res, 'ru', 7);
+          });
+          await ZoweZLUX.globalization.setLanguage('de');
+          ZoweZLUX.globalization.getLanguage().then((res) => {
+            assertEqual(res, 'de', 8);
+          });
+          await ZoweZLUX.globalization.setLanguage(curLang);
+        }
+
+        function test(){
+          testZoweZLUXExists();
+          testNotificationManager();
+          testGlobalization();
+        }
+
         test();
     </script>
     <script type="text/javascript" src="../js/main.js"></script>
@@ -68,9 +119,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
         <button class="iframe-button shadowed" type="button" onclick="sendAppRequest()">Send App Request</button>
         <button class="iframe-button shadowed" type="button" onclick="getDefaultsFromServer()">Get from Server</button>
         <button class="iframe-button shadowed" type="button" onclick="saveToServer()">Save to Server</button>
-        <button class="iframe-button shadowed" type="button" onclick="translateFunction('ZoweZLUX.globalization.getLocale', [])">translateFunctionCall</button>
         <button class="iframe-button shadowed" type="button" onclick="ZoweZLUX.notificationManager.notify(ZoweZLUX.notificationManager.createNotification('from gandhi', 'waddup yandhi', 1, 't.e.s.t'))">Waddup yandhi</button>
-        <button class="iframe-button shadowed" type="button" onclick="console.log(notifications.length)">Log notification len</button>
       </div>
       <span class="bold-text">Application Identifier: </span>
       <div>
