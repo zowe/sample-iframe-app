@@ -55,7 +55,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
         
         async function testNotificationManager(){
           ZoweZLUX.notificationManager.addMessageHandler('this').then(res => {
-            ZoweZLUX.notificationManager.createNotification('from gandhi', 'waddup yandhi', 1, 't.e.s.t').then(async function(testNotification) {
+            ZoweZLUX.notificationManager.createNotification('legalize ranch', 'bird up', 1, 't.e.s.t').then(async function(testNotification) {
               await ZoweZLUX.notificationManager.notify(testNotification)
               await ZoweZLUX.notificationManager.notify(testNotification)
               await ZoweZLUX.notificationManager.notify(testNotification)
@@ -119,7 +119,8 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
         <button class="iframe-button shadowed" type="button" onclick="sendAppRequest()">Send App Request</button>
         <button class="iframe-button shadowed" type="button" onclick="getDefaultsFromServer()">Get from Server</button>
         <button class="iframe-button shadowed" type="button" onclick="saveToServer()">Save to Server</button>
-        <button class="iframe-button shadowed" type="button" onclick="ZoweZLUX.notificationManager.notify(ZoweZLUX.notificationManager.createNotification('from gandhi', 'waddup yandhi', 1, 't.e.s.t'))">Waddup yandhi</button>
+        <button class="iframe-button shadowed" type="button" onclick="ZoweZLUX.notificationManager.createNotification('bird', 'up', 1, 't.e.s.t').then(res => ZoweZLUX.notificationManager.notify(res))">Send notification</button>
+        <button class="iframe-button shadowed" type="button" onclick="ZoweZLUX.globalization.getLocale().then(res => console.log(res))">Log Locale</button>
       </div>
       <span class="bold-text">Application Identifier: </span>
       <div>
