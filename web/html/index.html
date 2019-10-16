@@ -54,7 +54,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
         }
         
         async function testNotificationManager(){
-          ZoweZLUX.notificationManager.addMessageHandler('this').then(res => {
+          ZoweZLUX.notificationManager.addMessageHandler(this).then(res => {
             ZoweZLUX.notificationManager.createNotification('legalize ranch', 'bird up', 1, 't.e.s.t').then(async function(testNotification) {
               await ZoweZLUX.notificationManager.notify(testNotification)
               await ZoweZLUX.notificationManager.notify(testNotification)
@@ -100,13 +100,27 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
           await ZoweZLUX.globalization.setLanguage(curLang);
         }
 
+        function contextMenuAction0(){
+          console.log('Performing context menu action 0')
+        }
+
+        function contextMenuAction1(){
+          console.log('Performing context menu action 1')
+        }
+
+        async function testWindowActions(){
+          await windowActions.setTitle('bird up');
+          await windowActions.setPosition({top: 0, left: 0, width: 600, height: 400})
+          await windowActions.spawnContextMenu(0, 0, [{text: 'test0', action: contextMenuAction0}, {text: 'test1', action: contextMenuAction1}])
+        }
+
         function test(){
           testZoweZLUXExists();
           testNotificationManager();
           testGlobalization();
+          testWindowActions();
         }
 
-        test();
     </script>
     <script type="text/javascript" src="../js/main.js"></script>
   </head>
@@ -120,7 +134,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
         <button class="iframe-button shadowed" type="button" onclick="getDefaultsFromServer()">Get from Server</button>
         <button class="iframe-button shadowed" type="button" onclick="saveToServer()">Save to Server</button>
         <button class="iframe-button shadowed" type="button" onclick="ZoweZLUX.notificationManager.createNotification('bird', 'up', 1, 't.e.s.t').then(res => ZoweZLUX.notificationManager.notify(res))">Send notification</button>
-        <button class="iframe-button shadowed" type="button" onclick="ZoweZLUX.globalization.getLocale().then(res => console.log(res))">Log Locale</button>
+        <button class="iframe-button shadowed" type="button" onclick="test();">Run Unit Test</button>
       </div>
       <span class="bold-text">Application Identifier: </span>
       <div>
