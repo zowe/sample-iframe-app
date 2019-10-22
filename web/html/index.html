@@ -20,109 +20,109 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/iframe.css">
     <script type="text/javascript" src="../../../org.zowe.zlux.bootstrap/web/iframe-adapter.js"></script>
+    <script type="text/javascript" src="../js/main.js"></script>
     <!-- UNIT TEST FOR NOTIFIACTION MANAGER -->
     <script>
-        let notifications = [];
-        function handleMessageAdded(message){
-          notifications.unshift(message);
-          console.log('IFRAME NOTIFICATION ADD HANDLER:', notifications);
-        }
+      let notifications = [];
+      function handleMessageAdded(message){
+        notifications.unshift(message);
+        console.log(`iFrame instance ${instanceId} ADD HANDLER: `, notifications,);
+      }
 
-        function handleMessageRemoved(id) {
-          notifications.splice(notifications.findIndex(x => x.id === id), 1);
-          console.log('IFRAME NOTIFICATION REMOVE HANDLER:', notifications);
-        }
+      function handleMessageRemoved(id) {
+        notifications.splice(notifications.findIndex(x => x.id === id), 1);
+        console.log(`iFrame instance ${instanceId} REMOVE HANDLER: `, notifications);
+      }
 
-        function assertParam(param, testNum){
-          if(param === false){
-            console.warn('ASSERT FAILED: ', testNum)
-          } else {
-            console.log(`Assert passed: `, testNum);
-          }
+      function assertParam(param, testNum){
+        if(param === false){
+          console.warn('ASSERT FAILED: ', testNum)
+        } else {
+          console.log(`Assert passed: `, testNum);
         }
+      }
 
-        function assertEqual(testValue, expectedValue, testNum){
-          if(testValue === expectedValue){
-            console.log('Assert equal passed: ', testNum)
-          } else {
-            console.warn('ASSERT EQUAL FAILED: ', testNum, 'Test value: ' + testValue + ' | Expected value: ' + expectedValue);
-          }
+      function assertEqual(testValue, expectedValue, testNum){
+        if(testValue === expectedValue){
+          console.log('Assert equal passed: ', testNum)
+        } else {
+          console.warn('ASSERT EQUAL FAILED: ', testNum, 'Test value: ' + testValue + ' | Expected value: ' + expectedValue);
         }
+      }
 
-        function testZoweZLUXExists(){
-          assertParam(ZoweZLUX !== undefined, 2);
-        }
-        
-        async function testNotificationManager(){
-          ZoweZLUX.notificationManager.addMessageHandler(this).then(res => {
-            ZoweZLUX.notificationManager.createNotification('legalize ranch', 'bird up', 1, 't.e.s.t').then(async function(testNotification) {
-              await ZoweZLUX.notificationManager.notify(testNotification)
-              await ZoweZLUX.notificationManager.notify(testNotification)
-              await ZoweZLUX.notificationManager.notify(testNotification)
-              await ZoweZLUX.notificationManager.notify(testNotification)
-              assertParam(notifications.length === 4, 0);
-              let notificationIDs = notifications.map(elem => { return elem.id});
-              for(let i = 0; i < notificationIDs.length; i++){
-                let oldLen = notifications.length;
-                await ZoweZLUX.notificationManager.dismissNotification(notificationIDs[i]);
-                assertParam(notifications.length === oldLen - 1, 1);
-              }
-            })
+      function testZoweZLUXExists(){
+        assertParam(ZoweZLUX !== undefined, 2);
+      }
+      
+      async function testNotificationManager(){
+        ZoweZLUX.notificationManager.addMessageHandler(this).then(res => {
+          ZoweZLUX.notificationManager.createNotification('legalize ranch', 'bird up', 1, 't.e.s.t').then(async function(testNotification) {
+            await ZoweZLUX.notificationManager.notify(testNotification)
+            await ZoweZLUX.notificationManager.notify(testNotification)
+            await ZoweZLUX.notificationManager.notify(testNotification)
+            await ZoweZLUX.notificationManager.notify(testNotification)
+            assertParam(notifications.length === 4, 0);
+            let notificationIDs = notifications.map(elem => { return elem.id});
+            for(let i = 0; i < notificationIDs.length; i++){
+              let oldLen = notifications.length;
+              await ZoweZLUX.notificationManager.dismissNotification(notificationIDs[i]);
+              assertParam(notifications.length === oldLen - 1, 1);
+            }
           })
-        }
+        })
+      }
 
-        async function testGlobalization(){
-          let curLang = await ZoweZLUX.globalization.getLanguage();
-          await ZoweZLUX.globalization.setLanguage('en');
-          ZoweZLUX.globalization.getLanguage().then((res) => {
-            assertEqual(res, 'en', 3);
-          });
-          await ZoweZLUX.globalization.setLanguage('zh');
-          ZoweZLUX.globalization.getLanguage().then((res) => {
-            assertEqual(res, 'zh', 4);
-          });
-          await ZoweZLUX.globalization.setLanguage('fr');
-          ZoweZLUX.globalization.getLanguage().then((res) => {
-            assertEqual(res, 'fr', 5);
-          });
-          await ZoweZLUX.globalization.setLanguage('ja');
-          ZoweZLUX.globalization.getLanguage().then((res) => {
-            assertEqual(res, 'ja', 6);
-          });
-          await ZoweZLUX.globalization.setLanguage('ru');
-          ZoweZLUX.globalization.getLanguage().then((res) => {
-            assertEqual(res, 'ru', 7);
-          });
-          await ZoweZLUX.globalization.setLanguage('de');
-          ZoweZLUX.globalization.getLanguage().then((res) => {
-            assertEqual(res, 'de', 8);
-          });
-          await ZoweZLUX.globalization.setLanguage(curLang);
-        }
+      async function testGlobalization(){
+        let curLang = await ZoweZLUX.globalization.getLanguage();
+        await ZoweZLUX.globalization.setLanguage('en');
+        ZoweZLUX.globalization.getLanguage().then((res) => {
+          assertEqual(res, 'en', 3);
+        });
+        await ZoweZLUX.globalization.setLanguage('zh');
+        ZoweZLUX.globalization.getLanguage().then((res) => {
+          assertEqual(res, 'zh', 4);
+        });
+        await ZoweZLUX.globalization.setLanguage('fr');
+        ZoweZLUX.globalization.getLanguage().then((res) => {
+          assertEqual(res, 'fr', 5);
+        });
+        await ZoweZLUX.globalization.setLanguage('ja');
+        ZoweZLUX.globalization.getLanguage().then((res) => {
+          assertEqual(res, 'ja', 6);
+        });
+        await ZoweZLUX.globalization.setLanguage('ru');
+        ZoweZLUX.globalization.getLanguage().then((res) => {
+          assertEqual(res, 'ru', 7);
+        });
+        await ZoweZLUX.globalization.setLanguage('de');
+        ZoweZLUX.globalization.getLanguage().then((res) => {
+          assertEqual(res, 'de', 8);
+        });
+        await ZoweZLUX.globalization.setLanguage(curLang);
+      }
 
-        function contextMenuAction0(){
-          console.log('Performing context menu action 0')
-        }
+      function contextMenuAction0(){
+        console.log('Performing context menu action 0')
+      }
 
-        function contextMenuAction1(){
-          console.log('Performing context menu action 1')
-        }
+      function contextMenuAction1(){
+        console.log('Performing context menu action 1')
+      }
 
-        async function testWindowActions(){
-          await windowActions.setTitle('bird up');
-          await windowActions.setPosition({top: 0, left: 0, width: 600, height: 400})
-          await windowActions.spawnContextMenu(0, 0, [{text: 'test0', action: contextMenuAction0}, {text: 'test1', action: contextMenuAction1}])
-        }
+      async function testWindowActions(){
+        await windowActions.setTitle('bird up');
+        await windowActions.setPosition({top: 0, left: 0, width: 600, height: 400})
+        await windowActions.spawnContextMenu(0, 0, [{text: 'test0', action: contextMenuAction0}, {text: 'test1', action: contextMenuAction1}])
+      }
 
-        function test(){
-          testZoweZLUXExists();
-          testNotificationManager();
-          testGlobalization();
-          testWindowActions();
-        }
+      function test(){
+        testZoweZLUXExists();
+        testNotificationManager();
+        testGlobalization();
+        testWindowActions();
+      }
 
-    </script>
-    <script type="text/javascript" src="../js/main.js"></script>
+  </script>
   </head>
   <body class="iframe-font test-panel-container">
     <div class="test-panel plugin-test-panel">    

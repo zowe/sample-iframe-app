@@ -22,7 +22,6 @@
 
 const MY_PLUGIN_ID = 'org.zowe.zlux.sample.iframe';
 
-
 function SettingsService() {
   this.plugin = null;
 }
@@ -321,9 +320,10 @@ async function sendAppRequest() {
   }
 }
 
-window.addEventListener("load", function () {
-  console.log('Sample iframe app has loaded');
-}, false);
+// window.addEventListener("load", function () {
+//   console.log('Sample iframe app has loaded');
+//   window.top.postMessage('iframeload', '*');
+// }, false);
 
 
 /*
