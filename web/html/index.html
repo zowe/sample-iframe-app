@@ -102,17 +102,37 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       }
 
       function contextMenuAction0(){
-        console.log('Performing context menu action 0')
+        console.log('Performed context menu action 0')
       }
 
       function contextMenuAction1(){
-        console.log('Performing context menu action 1')
+        console.log('Performed context menu action 1')
       }
 
       async function testWindowActions(){
+        await windowActions.minimize();
+        await windowActions.maximize();
+        await windowActions.restore();
         await windowActions.setTitle('bird up');
         await windowActions.setPosition({top: 0, left: 0, width: 600, height: 400})
-        await windowActions.spawnContextMenu(0, 0, [{text: 'test0', action: contextMenuAction0}, {text: 'test1', action: contextMenuAction1}])
+        await windowActions.spawnContextMenu(0, 0, [
+          {
+            text: 'test0',
+            action: contextMenuAction0
+          },
+          {
+            text: 'test1',
+            action: contextMenuAction1
+          }
+        ])
+        await viewportEvents.registerCloseHandler(() => {
+          return new Promise((resolve, reject) => {
+            setTimeout(() => {
+              console.log('this is a test close handler with a 3s delay before closing to simulate an expensive function');
+              resolve();
+            }, 3000)
+          })
+        })
       }
 
       function test(){
