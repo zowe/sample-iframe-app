@@ -19,12 +19,16 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/iframe.css">
-    <script>var exports = {};</script>
+    <script>
+      if(exports){
+        var _tempExports = exports;
+      }
+      var exports = {};
+    </script>
     <script type="text/javascript" src="../../../../../lib/org.zowe.zlux.logger/0.9.0/logger.js"></script>
     <script type="text/javascript" src="../../../org.zowe.zlux.bootstrap/web/iframe-adapter.js"></script>
-    <!-- this likely needs to be imported with requirejs -->
     <script type="text/javascript" src="../js/main.js"></script>
-    <!-- UNIT TEST FOR NOTIFIACTION MANAGER -->
+    <!-- UNIT TEST -->
     <script>
       let notifications = [];
       function handleMessageAdded(message){
@@ -139,11 +143,9 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       }
 
       async function testLogger(){
-        let def = await getPluginDef();
-        let metadata = await getLaunchMetadata();
         let myLogger = ZoweZLUX.logger.makeComponentLogger('yeezy');
-        myLogger.info('pluginDef from iframe: ', def);
-        myLogger.severe('launch metadata: ', metadata);
+        myLogger.info('pluginDef from iframe: ', pluginDef);
+        myLogger.severe('launch metadata: ', launchMetadata);
         myLogger.warn('i saidAAaaaAAAAaAAAAAAaAAAaaaAAHHHHHHHHHHHHHHHHHhhHHHHHHHHHhhhHHHHHHHHHHHHHH', testGlobalization);
         myLogger.critical('critical log');
         myLogger.debug('debug log');
