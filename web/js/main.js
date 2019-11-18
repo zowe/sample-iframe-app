@@ -336,10 +336,6 @@ async function sendAppRequest() {
   }
 }
 
-// window.addEventListener("load", function () {
-//   console.log('Sample iframe app has loaded');
-//   window.top.postMessage('iframeload', '*');
-// }, false);
 
 
 /*

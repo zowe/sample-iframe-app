@@ -14,7 +14,7 @@
 <!-- This HTML could really contain anything, as long as the iframe App is pointed to some page, it will be contained within an iframe App window on the Desktop.
 In this case however, we are loading a simple JS file, ../js/main.js which has some awareness of Desktop globals for interaction -->
 <html>
-  <head onload="iframeScriptLoaded()">
+  <head>
     <title>Iframe Sample App</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,15 +24,32 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
         var ZoweZLUX_tempExports = exports;
       }
       var exports = {"__esModule": true};
+
+      //TODO: Devise a better way to check if pluginDef gets spawned. window.postmessage seems
+      //to fail and isn't ideal anyway...
+      let intervalId = setInterval(checkForStandaloneMode, 100);
+      function checkForStandaloneMode() {
+        if (pluginDef) { //If we have the plugin definition
+          clearInterval(intervalId);
+          document.getElementById("iframe-window-events").style.display="unset"; //Show Window Events
+        }
+      }
+      setTimeout(() => { 
+        clearInterval(intervalId);
+        if (pluginDef === undefined || null) {
+          document.getElementById("iframe-no-window-events").style.display="unset"; //Show No Window Event message
+        }
+      }, 1000);
       
     </script>
     <script type="text/javascript" src="../../../../../lib/org.zowe.zlux.logger/0.9.0/logger.js"></script>
-    <script type="text/javascript" src="../../../org.zowe.zlux.bootstrap/web/iframe-adapter.js" onload="iframeScriptLoaded()"></script>
+    <script type="text/javascript" src="../../../org.zowe.zlux.bootstrap/web/iframe-adapter.js"></script>
     <script type="text/javascript" src="../js/main.js"></script>
     <!-- UNIT TEST -->
     <script>
       let notifications = [];
       let windowTitle = "Iframe Sample";
+
       function handleMessageAdded(message){
         notifications.unshift(message);
         console.log(`iFrame instance ${instanceId} ADD HANDLER: `, notifications,);
@@ -237,11 +254,6 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
             }
           });
         }
-
-        // Check for missing Window Events in standalone mode
-        // if (pluginDef === undefined) {
-        //   document.getElementById("iframe-window-events").style.display="none";
-        // }
       };
 
   </script>
@@ -264,9 +276,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
               <button class="iframe-button" type="button" onclick="getDefaultsFromServer()">Get metadata from Server</button>
               <button class="iframe-button" type="button" onclick="saveToServer()">Save metadata to Server</button>
 
-              <!-- TODO: Conditionally check if Window Events exist, then hide this element if they don't.
-                ex: document.getElementById("iframe-window-events").style.display="none";-->
-              <div id="iframe-window-events" style="display: unset;">
+              <div id="iframe-window-events" style="display: none;">
               <br></br>
                 <span class="bold-text">Window Events: </span>
               <br></br>
@@ -276,6 +286,11 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
               <button class="iframe-button" type="button" onclick="windowActions.restore();">Restore</button>
               <button class="iframe-button" type="button" onclick="testSlowClose();">Slow Close (3s Handler)</button>
               <button class="iframe-button" type="button" onclick="testClose();">Close</button>
+              </div>
+              <div id="iframe-no-window-events" style="display: none">
+                <br></br>
+                  <span class="bold-text">Window Events unavailable (viewing in standalone mode) </span>
+                <br></br>
               </div>
 
               <br></br>
