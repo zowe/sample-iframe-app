@@ -14,8 +14,8 @@
 <!-- This HTML could really contain anything, as long as the iframe App is pointed to some page, it will be contained within an iframe App window on the Desktop.
 In this case however, we are loading a simple JS file, ../js/main.js which has some awareness of Desktop globals for interaction -->
 <html>
-  <head>
-    <title>Plug-in API Example</title>
+  <head onload="iframeScriptLoaded()">
+    <title>Iframe Sample App</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/iframe.css">
@@ -24,13 +24,15 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
         var ZoweZLUX_tempExports = exports;
       }
       var exports = {"__esModule": true};
+      
     </script>
     <script type="text/javascript" src="../../../../../lib/org.zowe.zlux.logger/0.9.0/logger.js"></script>
-    <script type="text/javascript" src="../../../org.zowe.zlux.bootstrap/web/iframe-adapter.js"></script>
+    <script type="text/javascript" src="../../../org.zowe.zlux.bootstrap/web/iframe-adapter.js" onload="iframeScriptLoaded()"></script>
     <script type="text/javascript" src="../js/main.js"></script>
     <!-- UNIT TEST -->
     <script>
       let notifications = [];
+      let windowTitle = "Iframe Sample";
       function handleMessageAdded(message){
         notifications.unshift(message);
         console.log(`iFrame instance ${instanceId} ADD HANDLER: `, notifications,);
@@ -58,12 +60,21 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       }
 
       function testZoweZLUXExists(){
+        if (ZoweZLUX !== undefined) {
+          console.log("Does the ZoweZLUX global object exist? " + "YES!");
+        }else {
+          console.log("Does the ZoweZLUX global object exist? " + "NO!");
+        }
         assertParam(ZoweZLUX !== undefined, 2);
       }
       
       async function testNotificationManager(){
+        if (pluginDef === undefined) {
+          console.error("This action is not supported yet in standalone mode.");
+          return;
+        }
         ZoweZLUX.notificationManager.addMessageHandler(this).then(res => {
-          ZoweZLUX.notificationManager.createNotification('legalize ranch', 'bird up', 1, 't.e.s.t').then(async function(testNotification) {
+          ZoweZLUX.notificationManager.createNotification('Sample Iframe Notification', 'I will disappear soon. My life is fleeting.', 1, pluginDef.basePlugin.identifier).then(async function(testNotification) {
             await ZoweZLUX.notificationManager.notify(testNotification)
             await ZoweZLUX.notificationManager.notify(testNotification)
             await ZoweZLUX.notificationManager.notify(testNotification)
@@ -73,14 +84,26 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
             for(let i = 0; i < notificationIDs.length; i++){
               let oldLen = notifications.length;
               await ZoweZLUX.notificationManager.dismissNotification(notificationIDs[i]);
+              await ZoweZLUX.notificationManager.removeAll();
               assertParam(notifications.length === oldLen - 1, 1);
             }
           })
         })
       }
 
+      async function testNotification() {
+        ZoweZLUX.notificationManager.createNotification('Sample Iframe Notification', 'I will disappear soon. My life is fleeting.', 1, pluginDef.basePlugin.identifier).then(async function(testNotification) {
+            await ZoweZLUX.notificationManager.notify(testNotification)})
+      }
+
       async function testGlobalization(){
+        if (pluginDef === undefined) {
+          console.error("This action is not supported yet in standalone mode.");
+          return;
+        }
         let curLang = await ZoweZLUX.globalization.getLanguage();
+        console.warn("Current language detected as: " + curLang);
+        
         await ZoweZLUX.globalization.setLanguage('en');
         ZoweZLUX.globalization.getLanguage().then((res) => {
           assertEqual(res, 'en', 3);
@@ -109,49 +132,42 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       }
 
       function contextMenuAction0(){
-        console.log('Performed context menu action 0')
+        console.warn('You selected action 0.')
       }
 
       function contextMenuAction1(){
-        console.log('Performed context menu action 1')
+        console.error('You selected action 1.')
       }
 
-      async function testWindowActions(){
+      async function testWindowActions(event){
+        if (pluginDef === undefined) {
+          console.error("This action is not supported yet in standalone mode.");
+          return;
+        }
         await windowActions.minimize();
         await windowActions.maximize();
         await windowActions.restore();
-        await windowActions.setTitle('bird up');
-        await windowActions.setPosition({top: 0, left: 0, width: 600, height: 400})
-        await windowActions.spawnContextMenu(0, 0, [
+        await this.testWindowTitle();
+        await windowActions.setPosition({top: 150, left: 150, width: 800, height: 600})
+        await windowActions.spawnContextMenu(event.clientX, event.clientY, [
           {
-            text: 'test0',
+            text: 'Action 0 - Click me',
             action: contextMenuAction0
           },
           {
-            text: 'test1',
+            text: "Action 1 - Don't click me",
             action: contextMenuAction1
           }
-        ])
-        await viewportEvents.registerCloseHandler(() => {
-          return new Promise((resolve, reject) => {
-            setTimeout(() => {
-              console.log('this is a test close handler with a 3s delay before closing to simulate an expensive function');
-              resolve();
-            }, 3000)
-          })
-        })
+        ], false)
       }
 
       async function testLogger(){
-        let myLogger = ZoweZLUX.logger.makeComponentLogger('yeezy');
-        myLogger.info('pluginDef from iframe: ', pluginDef);
-        myLogger.severe('launch metadata: ', launchMetadata);
-        myLogger.warn('i saidAAaaaAAAAaAAAAAAaAAAaaaAAHHHHHHHHHHHHHHHHHhhHHHHHHHHHhhhHHHHHHHHHHHHHH', testGlobalization);
-        myLogger.critical('critical log');
-        myLogger.debug('debug log');
-        myLogger.trace('trace log');
-        let sublogger = myLogger.makeSublogger('yandhi');
-        sublogger.info('info log');
+        let myLogger = ZoweZLUX.logger.makeComponentLogger('Iframe Unit Test');
+        myLogger.warn('Retrieving plugin definition: ', pluginDef);
+        myLogger.warn('Retrieving launch metadata (will be null if this app was started without app to app communication): ', launchMetadata);
+
+        let sublogger = myLogger.makeSublogger('Iframe Sublogger');
+        sublogger.info('\ninfo log');
         sublogger.severe('severe log');
         sublogger.warn('warn log');
         sublogger.critical('critical log');
@@ -159,100 +175,190 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
         sublogger.trace('trace log');
       }
 
-      function test(){
-        //testZoweZLUXExists();
-        //testNotificationManager();
-        //testGlobalization();
-        //testWindowActions();
-        testLogger();
+      async function testWindowTitle(){
+        if (windowTitle == 'Iframe Sample') {
+          await windowActions.setTitle('Iframe Sample (title changed)');
+          windowTitle = 'Iframe Sample (title changed)';
+        } else {
+          await windowActions.setTitle('Iframe Sample');
+          windowTitle = 'Iframe Sample';
+        }
       }
+
+      async function testSlowClose(){
+        await viewportEvents.registerCloseHandler(() => {
+          return new Promise((resolve, reject) => {
+            setTimeout(() => {
+              console.log('This is a test close handler with a 3s delay before closing to simulate an expensive function');
+              resolve();
+            }, 3000)
+          })
+        })
+        await windowActions.close();
+      }
+
+      async function testClose(){
+        await viewportEvents.registerCloseHandler(() => {
+          return new Promise((resolve, reject) => {
+            setTimeout(() => {
+              console.log('Normal close');
+              resolve();
+            }, 0)
+          })
+        })
+        await windowActions.close();
+      }
+
+      function test(event) {
+        testLogger();
+        testGlobalization();
+        testNotificationManager();
+        testWindowActions(event);
+        testZoweZLUXExists();
+      }
+
+      function iframeLoaded() {
+        // Register accordion logic
+        var acc = document.getElementsByClassName("iframe-accordion");
+        var i;
+
+        for (i = 0; i < acc.length; i++) {
+          if (i > 0) { // Hide all accordion sections by default except the first
+            acc[i].nextElementSibling.style.maxHeight = "0px";
+            acc[i].classList.toggle("active");
+          }
+          acc[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.maxHeight != "0px") {
+              panel.style.maxHeight = "0px";
+            } else {
+              panel.style.maxHeight = panel.scrollHeight + "px";
+            }
+          });
+        }
+
+        // Check for missing Window Events in standalone mode
+        // if (pluginDef === undefined) {
+        //   document.getElementById("iframe-window-events").style.display="none";
+        // }
+      };
+
+      function iframeScriptLoaded() {
+        console.log('9999999999999999999999999999999999999999999');
+      }
+
+      window.top.addEventListener("iframeload", function () {
+        console.log('9999999999999999999999999999999999999999999');
+      });
 
   </script>
   </head>
-  <body class="iframe-font test-panel-container">
+  <body class="iframe-font test-panel-container" onload="iframeLoaded(this)">
     <div class="test-panel plugin-test-panel">    
       <div class="bottom-10">
-        <span class="bigger-bold-text">Plug-in Request Test</span>
-        <!-- Tests the sending of requests to other plugins. Defaults to send a message
-             to itself (and responding) to show more parts of the API-->
-        <button class="iframe-button shadowed" type="button" onclick="sendAppRequest()">Send App Request</button>
-        <button class="iframe-button shadowed" type="button" onclick="getDefaultsFromServer()">Get from Server</button>
-        <button class="iframe-button shadowed" type="button" onclick="saveToServer()">Save to Server</button>
-        <button class="iframe-button shadowed" type="button" onclick="ZoweZLUX.notificationManager.createNotification('bird', 'up', 1, 't.e.s.t').then(res => ZoweZLUX.notificationManager.notify(res))">Send notification</button>
-        <button class="iframe-button shadowed" type="button" onclick="test();">Run Unit Test</button>
-        <button class="iframe-button shadowed" type="button" onclick="windowActions.minimize();">Minimize</button>
-        <button class="iframe-button shadowed" type="button" onclick="windowActions.maximize();">Maximize</button>
-        <button class="iframe-button shadowed" type="button" onclick="windowActions.close();">Close</button>
-        <button class="iframe-button shadowed" type="button" onclick="getLaunchMetadata().then((res) => console.log(res))">Log launch metadata</button>
-      </div>
-      <span class="bold-text">Application Identifier: </span>
-      <div>
-        <div class="div-input">
-          <input class="iframe-input input-height input-corner input-text shadowed" type="text" name="appId" id="appId" placeholder="app identifier" value="org.zowe.terminal.tn3270"/>
-        </div>
-        <div>
-          <!-- Action types are used to determine what sort of Action is being taken on whatever App instance is the target. Launch simply creates a new instance with the context you provide, but Message can be used to communicate with an already open Instance to drive some action -->
-          <label class="bold-text">Action Type: </label>
-          <input type="radio" id="actionLaunch"
-                 name="actionType" value="Launch" checked>
-          <label for="actionLaunch">Launch</label>
+          <button class="iframe-accordion bold-text">Iframe Plugin requests:</button>
+          <div class="panel">
+              <!-- Tests the sending of requests to other plugins. Defaults to send a message
+                   to itself (and responding) to show more parts of the API-->
+                <span class="bold-text">Unit Test: </span>
+              <br></br>
+              <button class="iframe-button" type="button" onclick="test(event);">Run</button>
 
-          <input type="radio" id="actionMessage"
-                 name="actionType" value="Message">
-          <label for="actionMessage">Message</label>
-        </div>
-        <!-- App target modes are used to determine which instance of an App should be communicated with. You can create a new instance to send the Action to, or you could reuse an existing instance that is open. -->
-        <div>
-          <label class="bold-text">App Target Mode: </label>
-          <input type="radio" id="targetCreate"
-                 name="targetMode" value="PluginCreate" checked>
-          <label for="targetCreate">Create New</label>
+              <br></br>
+                <span class="bold-text">Server Interaction: </span>
+              <br></br>
+              <button class="iframe-button" type="button" onclick="testLogger()">Log</button>
+              <button class="iframe-button" type="button" onclick="getDefaultsFromServer()">Get metadata from Server</button>
+              <button class="iframe-button" type="button" onclick="saveToServer()">Save metadata to Server</button>
 
-          <input type="radio" id="targetReuse"
-                 name="targetMode" value="PluginFindAnyOrCreate">
-          <label for="targetReuse">Reuse Any Open</label>
-        </div>      
-        <span class="bold-text hide-it">Target App Window Title (this will become the title for the target window)</span>
-        <div class="div-input hide-it">
-          <input class="iframe-input input-height input-corner input-text shadowed" type="text" name="appWindowTitle" id="appWindowTitle" placeholder="app window title" value="My New Title"/>
-        </div>
-        <span class="div-input bold-text">Parameters:</span>
-        <div class="div-textarea-input">
-          <!-- The text here is merely an example which provides some connection details for the terminal app. It could be anything so long as the receiving App supports it.
-               In this example App, the contents here will be put inside of a JSON with the contents as the "data" attribute. -->
-          <textarea class="iframe-input input-corner input-text shadowed" rows="11" cols="50" name="parameters" id="parameters">
-{"type":"connect",
- "connectionSettings":{
-   "host":"localhost",
-   "port":23,
-   "deviceType":5,
-   "alternateHeight":60,
-   "alternateWidth":132,
-   "oiaEnabled": true,
-   "security": {
-     "type":0
-   }
-}}</textarea>
-        </div>
-        <div style="width: 100%">
-          <span>App Status or Message:</span>
-          <p class="display-text shadowed disable-effect" id="status">Status will appear here.</p>
-        </div>
+              <div id="iframe-window-events" style="display: unset;">
+              <br></br>
+                <span class="bold-text">Window Events: </span>
+              <br></br>
+              <button class="iframe-button" type="button" onclick="testWindowTitle();">Change Title</button>
+              <button class="iframe-button" type="button" onclick="windowActions.minimize();">Minimize</button>
+              <button class="iframe-button" type="button" onclick="windowActions.maximize();">Maximize</button>
+              <button class="iframe-button" type="button" onclick="windowActions.restore();">Restore</button>
+              <button class="iframe-button" type="button" onclick="testSlowClose();">Slow Close (3s Handler)</button>
+              <button class="iframe-button" type="button" onclick="testClose();">Close</button>
+              </div>
+
+              <br></br>
+                <span class="bold-text">Notification Manager: </span>
+              <br></br>
+              <button class="iframe-button" type="button" onclick="testNotification()">Send a notification</button>
+          </div>
+          
+          <button class="iframe-accordion bold-text">App to App interaction:</button>
+          <div class="panel">
+              <span class="bold-text">Application Identifier: </span>
+              <div>
+                <div class="div-input">
+                  <input class="iframe-input input-height input-corner" type="text" name="appId" id="appId" placeholder="Enter app identifier." value="org.zowe.terminal.tn3270"/>
+                </div>
+                <div>
+                  <!-- Action types are used to determine what sort of Action is being taken on whatever App instance is the target. Launch simply creates a new instance with the context you provide, but Message can be used to communicate with an already open Instance to drive some action -->
+                  <label class="bold-text">Action Type: </label>
+                  <input type="radio" id="actionLaunch"
+                         name="actionType" value="Launch" checked>
+                  <label for="actionLaunch">Launch</label>
+        
+                  <input type="radio" id="actionMessage"
+                         name="actionType" value="Message">
+                  <label for="actionMessage">Message</label>
+                </div>
+                <!-- App target modes are used to determine which instance of an App should be communicated with. You can create a new instance to send the Action to, or you could reuse an existing instance that is open. -->
+                <div style="padding-bottom: 20px;">
+                  <label class="bold-text">App Target Mode: </label>
+                  <input type="radio" id="targetCreate"
+                         name="targetMode" value="PluginCreate" checked>
+                  <label for="targetCreate">Create New</label>
+        
+                  <input type="radio" id="targetReuse"
+                         name="targetMode" value="PluginFindAnyOrCreate">
+                  <label for="targetReuse">Reuse Any Open</label>
+                </div>
+                <span class="div-input bold-text">Parameters:</span>
+                <div class="div-textarea-input">
+                  <!-- The text here is merely an example which provides some connection details for the terminal app. It could be anything so long as the receiving App supports it.
+                       In this example App, the contents here will be put inside of a JSON with the contents as the "data" attribute. -->
+                  <textarea class="iframe-input input-corner" rows="11" cols="50" name="parameters" id="parameters">
+                  {"type":"connect",
+                  "connectionSettings":{
+                    "host":"localhost",
+                    "port":23,
+                    "deviceType":5,
+                    "alternateHeight":60,
+                    "alternateWidth":132,
+                    "oiaEnabled": true,
+                    "security": {
+                      "type":0
+                    }
+                  }}</textarea>
+                </div>
+                <button class="iframe-button" type="button" onclick="sendAppRequest()">Send App request</button>
+                <br></br>
+                <div style="width: 100%">
+                  <span class="bold-text">App Status or Message:</span>
+                  <p class="display-text   disable-effect" id="status">Status will appear here.</p>
+                </div>
+                </div>
+            </div>
+            <button class="iframe-accordion bold-text">Dataservice Request test:</button>
+            <div class="panel">
+                    <div>
+                      <input class="iframe-input input-height input-corner" placeholder="Enter message here." 
+                        name="helloText" id="helloText" oninput="inputChanged()" style="width: 50%;"/>
+                      <button class="iframe-button" id="runButton" onclick="sayHello()" disabled
+                        style="color: grey; border-color: grey;">Run</button>
+                    </div>
+                    <div>
+                      <textarea readonly class="server-response" placeholder="Response will be shown here." name="serverResponseMessage" id="serverResponseMessage"></textarea>
+                    </div>
+            </div>
       </div>
-    </div>
-    <div class="test-panel dataservice-test-panel">
-      <div class="bottom-10">
-        <span class="bigger-bold-text">Dataservice Request Test</span>
-      </div>
-      <div>
-        <input placeholder="Message" name="helloText" id="helloText" oninput="inputChanged()"/>
-        <button id="runButton" onclick="sayHello()" disabled>Run</button>
-      </div>
-      <div>
-        <label>Response</label>
-        <textarea readonly class="server-response" placeholder="Response" name="serverResponseMessage" id="serverResponseMessage"></textarea>
-      </div>
-    </div>    
+    </div>  
   </body>
 </html>
 
