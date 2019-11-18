@@ -87,7 +87,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       
       async function testNotificationManager(){
         if (pluginDef === undefined) {
-          console.error("This action is not supported yet in standalone mode.");
+          console.error("Testing notificaiton manager is not yet supported in standalone mode.");
           return;
         }
         ZoweZLUX.notificationManager.addMessageHandler(this).then(res => {
@@ -109,13 +109,17 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       }
 
       async function testNotification() {
+        if (pluginDef === undefined) {
+          console.error("Sending notifications is not yet supported in standalone mode.");
+          return;
+        }
         ZoweZLUX.notificationManager.createNotification('Sample Iframe Notification', 'I will disappear soon. My life is fleeting.', 1, pluginDef.basePlugin.identifier).then(async function(testNotification) {
             await ZoweZLUX.notificationManager.notify(testNotification)})
       }
 
       async function testGlobalization(){
         if (pluginDef === undefined) {
-          console.error("This action is not supported yet in standalone mode.");
+          console.error("Testing globalization is not yet supported in standalone mode.");
           return;
         }
         let curLang = await ZoweZLUX.globalization.getLanguage();
@@ -158,7 +162,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
 
       async function testWindowActions(event){
         if (pluginDef === undefined) {
-          console.error("This action is not supported yet in standalone mode.");
+          console.error("Testing window actions is not supported in standalone mode.");
           return;
         }
         await windowActions.minimize();
