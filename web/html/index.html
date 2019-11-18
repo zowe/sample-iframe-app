@@ -244,14 +244,6 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
         // }
       };
 
-      function iframeScriptLoaded() {
-        console.log('9999999999999999999999999999999999999999999');
-      }
-
-      window.top.addEventListener("iframeload", function () {
-        console.log('9999999999999999999999999999999999999999999');
-      });
-
   </script>
   </head>
   <body class="iframe-font test-panel-container" onload="iframeLoaded(this)">
@@ -272,6 +264,8 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
               <button class="iframe-button" type="button" onclick="getDefaultsFromServer()">Get metadata from Server</button>
               <button class="iframe-button" type="button" onclick="saveToServer()">Save metadata to Server</button>
 
+              <!-- TODO: Conditionally check if Window Events exist, then hide this element if they don't.
+                ex: document.getElementById("iframe-window-events").style.display="none";-->
               <div id="iframe-window-events" style="display: unset;">
               <br></br>
                 <span class="bold-text">Window Events: </span>
