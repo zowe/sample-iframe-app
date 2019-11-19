@@ -87,7 +87,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       
       async function testNotificationManager(){
         if (pluginDef === undefined) {
-          console.error("Testing notificaiton manager is not yet supported in standalone mode.");
+          console.error("Testing notification manager is not yet supported in standalone mode.");
           return;
         }
         ZoweZLUX.notificationManager.addMessageHandler(this).then(res => {
@@ -160,16 +160,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
         console.error('You selected action 1.')
       }
 
-      async function testWindowActions(event){
-        if (pluginDef === undefined) {
-          console.error("Testing window actions is not supported in standalone mode.");
-          return;
-        }
-        await windowActions.minimize();
-        await windowActions.maximize();
-        await windowActions.restore();
-        await this.testWindowTitle();
-        await windowActions.setPosition({top: 150, left: 150, width: 800, height: 600})
+      async function testContextMenu(event) {
         await windowActions.spawnContextMenu(event.clientX, event.clientY, [
           {
             text: 'Action 0 - Click me',
@@ -180,6 +171,19 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
             action: contextMenuAction1
           }
         ], false)
+      }
+
+      async function testWindowActions(event){
+        if (pluginDef === undefined) {
+          console.error("Testing window actions is not supported in standalone mode.");
+          return;
+        }
+        await windowActions.minimize();
+        await windowActions.maximize();
+        await windowActions.restore();
+        await this.testWindowTitle();
+        await windowActions.setPosition({top: 150, left: 150, width: 800, height: 600})
+        await this.testContextMenu(event);
       }
 
       async function testLogger(){
@@ -281,27 +285,32 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
               <button class="iframe-button" type="button" onclick="saveToServer()">Save metadata to Server</button>
 
               <div id="iframe-window-events" style="display: none;">
-              <br></br>
-                <span class="bold-text">Window Events: </span>
-              <br></br>
-              <button class="iframe-button" type="button" onclick="testWindowTitle();">Change Title</button>
-              <button class="iframe-button" type="button" onclick="windowActions.minimize();">Minimize</button>
-              <button class="iframe-button" type="button" onclick="windowActions.maximize();">Maximize</button>
-              <button class="iframe-button" type="button" onclick="windowActions.restore();">Restore</button>
-              <button class="iframe-button" type="button" onclick="testSlowClose();">Slow Close (3s Handler)</button>
-              <button class="iframe-button" type="button" onclick="testClose();">Close</button>
+                <br></br>
+                  <span class="bold-text">Window Events: </span>
+                <br></br>
+                <button class="iframe-button" type="button" onclick="testWindowTitle();">Change Title</button>
+                <button class="iframe-button" type="button" onclick="windowActions.minimize();">Minimize</button>
+                <button class="iframe-button" type="button" onclick="windowActions.maximize();">Maximize</button>
+                <button class="iframe-button" type="button" onclick="windowActions.restore();">Restore</button>
+                <button class="iframe-button" type="button" onclick="testSlowClose();">Slow Close (3s Handler)</button>
+                <button class="iframe-button" type="button" onclick="testClose();">Close</button>
+              
+                <br></br>
+                  <span class="bold-text">Desktop Components: </span>
+                <br></br>
+                <button class="iframe-button" type="button" onclick="testNotification()">Send a notification</button>
+                <button class="iframe-button" type="button" onclick="testContextMenu(event)">Spawn a context menu</button>
+            
               </div>
               <div id="iframe-no-window-events" style="display: none">
                 <br></br>
                   <span class="bold-text">Window Events unavailable (viewing in standalone mode) </span>
                 <br></br>
+                  <span class="bold-text">Desktop Components unavailable (viewing in standalone mode) </span>
+                <br></br>
               </div>
 
-              <br></br>
-                <span class="bold-text">Notification Manager: </span>
-              <br></br>
-              <button class="iframe-button" type="button" onclick="testNotification()">Send a notification</button>
-          </div>
+              </div>
           
           <button class="iframe-accordion bold-text">App to App interaction:</button>
           <div class="panel">
