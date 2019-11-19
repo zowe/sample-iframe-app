@@ -25,8 +25,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       }
       var exports = {"__esModule": true};
 
-      //TODO: Devise a better way to check if pluginDef gets spawned. window.postmessage seems
-      //to fail and isn't ideal anyway...
+      //TODO: Devise a better way to check if pluginDef is available
       let intervalId = setInterval(checkForStandaloneMode, 100);
       function checkForStandaloneMode() {
         if (pluginDef) { //If we have the plugin definition
