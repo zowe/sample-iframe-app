@@ -25,20 +25,24 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       }
       var exports = {"__esModule": true};
 
-      //TODO: Devise a better way to check if pluginDef is available
-      let intervalId = setInterval(checkForStandaloneMode, 100);
-      function checkForStandaloneMode() {
-        if (pluginDef) { //If we have the plugin definition
+      if (window.GIZA_SIMPLE_CONTAINER_REQUESTED) { //Ancient edgecase
+        document.getElementById("iframe-no-window-events").style.display="unset"; //Standalone mode
+      } else {
+        //TODO: Devise a better way to check if pluginDef is available
+        let intervalId = setInterval(checkForStandaloneMode, 100);
+        function checkForStandaloneMode() {
+          if (pluginDef) { //If we have the plugin definition
+            clearInterval(intervalId);
+            document.getElementById("iframe-window-events").style.display="unset"; //Desktop mode
+          }
+        }
+        setTimeout(() => { 
           clearInterval(intervalId);
-          document.getElementById("iframe-window-events").style.display="unset"; //Show Window Events
-        }
+          if (pluginDef === undefined || null) {
+            document.getElementById("iframe-no-window-events").style.display="unset"; //Standalone mode
+          }
+        }, 1000);
       }
-      setTimeout(() => { 
-        clearInterval(intervalId);
-        if (pluginDef === undefined || null) {
-          document.getElementById("iframe-no-window-events").style.display="unset"; //Show No Window Event message
-        }
-      }, 1000);
       
     </script>
     <script type="text/javascript" src="../../../../../lib/org.zowe.zlux.logger/0.9.0/logger.js"></script>
@@ -368,13 +372,13 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
             </div>
             <button class="iframe-accordion bold-text">Dataservice Request test:</button>
             <div class="panel dataservice-test-panel">
+                    <div></div> <!-- Dummy div element for QA-->
                     <div>
                       <input class="iframe-input input-height input-corner" placeholder="Enter message here." 
                         name="helloText" id="helloText" oninput="inputChanged()" style="width: 50%;"/>
                       <button class="iframe-button" id="runButton" onclick="sayHello()" disabled
                         style="color: grey; border-color: grey;">Run</button>
                     </div>
-                    <div></div> <!-- Dummy div element for QA -->
                     <div>
                       <textarea readonly class="server-response" placeholder="Response will be shown here." name="serverResponseMessage" id="serverResponseMessage"></textarea>
                     </div>
