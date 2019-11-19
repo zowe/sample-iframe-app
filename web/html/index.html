@@ -366,19 +366,17 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
                 </div>
                 </div>
             </div>
-            <div class="dataservice-test-panel">
-              <button class="iframe-accordion bold-text">Dataservice Request test:</button>
-              <div class="panel">
-                      <div>
-                        <input class="iframe-input input-height input-corner" placeholder="Enter message here." 
-                          name="helloText" id="helloText" oninput="inputChanged()" style="width: 50%;"/>
-                        <button class="iframe-button" id="runButton" onclick="sayHello()" disabled
-                          style="color: grey; border-color: grey;">Run</button>
-                      </div>
-                      <div>
-                        <textarea readonly class="server-response" placeholder="Response will be shown here." name="serverResponseMessage" id="serverResponseMessage"></textarea>
-                      </div>
-              </div>
+            <button class="iframe-accordion bold-text">Dataservice Request test:</button>
+            <div class="panel dataservice-test-panel">
+                    <div>
+                      <input class="iframe-input input-height input-corner" placeholder="Enter message here." 
+                        name="helloText" id="helloText" oninput="inputChanged()" style="width: 50%;"/>
+                      <button class="iframe-button" id="runButton" onclick="sayHello()" disabled
+                        style="color: grey; border-color: grey;">Run</button>
+                    </div>
+                    <div>
+                      <textarea readonly class="server-response" placeholder="Response will be shown here." name="serverResponseMessage" id="serverResponseMessage"></textarea>
+                    </div>
             </div>
       </div>
     </div>  
