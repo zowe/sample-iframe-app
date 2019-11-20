@@ -145,7 +145,7 @@ function getDefaultsFromServer() {
     }
   });
   if (ZoweZLUX) {
-    console.log('IFrame is within MVD');
+    console.log('IFrame has ZoweZLUX global');
     settingsService.getDefaultsFromServer((resText)=> {
       try {
         let responseJson = JSON.parse(resText);
@@ -192,7 +192,7 @@ function saveToServer() {
     }
   });
   if (ZoweZLUX) {
-    console.log('IFrame is within MVD');
+    console.log('IFrame has ZoweZLUX global');
     let actionTypes = document.getElementsByName('actionType');
     let type;
     for (let i =0; i < actionTypes.length; i++) {
@@ -239,7 +239,7 @@ function inputChanged() {
 
 async function sayHello() {
   if (ZoweZLUX) {
-    console.log('IFrame is within MVD');
+    console.log('IFrame has ZoweZLUX global');
     let myPluginDef = await ZoweZLUX.pluginManager.getPlugin(MY_PLUGIN_ID);
     let url = await ZoweZLUX.uriBroker.pluginRESTUri(myPluginDef, 'hello', null);
     helloService.sayHello(document.getElementById('helloText').value, url, (resText) => {
@@ -291,7 +291,7 @@ async function sendAppRequest() {
     let statusElement = document.getElementById('status');
     let message = '';
     if (ZoweZLUX) {
-      console.log((message = 'IFrame is within MVD'));
+      console.log('IFrame has ZoweZLUX global');
       /* PluginManager can be used to find what Plugins (Apps are a type of Plugin) are part of the current ZLUX instance.
          Once you know that the App you want is present, you can execute Actions on it by using the Dispatcher.
       */
