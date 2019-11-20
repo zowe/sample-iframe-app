@@ -138,7 +138,7 @@ if (ZoweZLUX) {
 }
 
 function getDefaultsFromServer() {
-  if (pluginDef === undefined) {
+  if (ZoweZLUX.iframe.isSingleAppMode()) {
     console.error("This action is not supported yet in standalone mode.");
     return;
   }
@@ -183,7 +183,7 @@ function getDefaultsFromServer() {
 };
 
 function saveToServer() {
-  if (pluginDef === undefined) {
+  if (ZoweZLUX.iframe.isSingleAppMode()) {
     console.error("This action is not supported yet in standalone mode.");
     return;
   }
@@ -265,7 +265,7 @@ async function sayHello() {
 // by the button labelled "Send App Request"
 
 async function sendAppRequest() {
-  if (pluginDef === undefined) {
+  if (ZoweZLUX.iframe.isSingleAppMode()) {
     console.error("This action is not supported yet in standalone mode.");
     return;
   }
