@@ -138,10 +138,12 @@ if (ZoweZLUX) {
 }
 
 function getDefaultsFromServer() {
-  if (ZoweZLUX.iframe.isSingleAppMode()) {
-    console.error("This action is not supported yet in standalone mode.");
-    return;
-  }
+  ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
+    if (value) { //If we are in single app mode...
+      console.error("This action is not supported yet in standalone mode.");
+      return;
+    }
+  });
   if (ZoweZLUX) {
     console.log('IFrame is within MVD');
     settingsService.getDefaultsFromServer((resText)=> {
@@ -183,10 +185,12 @@ function getDefaultsFromServer() {
 };
 
 function saveToServer() {
-  if (ZoweZLUX.iframe.isSingleAppMode()) {
-    console.error("This action is not supported yet in standalone mode.");
-    return;
-  }
+  ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
+    if (value) { //If we are in single app mode...
+      console.error("This action is not supported yet in standalone mode.");
+      return;
+    }
+  });
   if (ZoweZLUX) {
     console.log('IFrame is within MVD');
     let actionTypes = document.getElementsByName('actionType');
@@ -265,10 +269,12 @@ async function sayHello() {
 // by the button labelled "Send App Request"
 
 async function sendAppRequest() {
-  if (ZoweZLUX.iframe.isSingleAppMode()) {
-    console.error("This action is not supported yet in standalone mode.");
-    return;
-  }
+  ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
+    if (value) { //If we are in single app mode...
+      console.error("This action is not supported yet in standalone mode.");
+      return;
+    }
+  });
   var requestText = document.getElementById('parameters').value;
   var parameters = null;
   /*Parameters for Actions could be a number, string, or object. The actual event context of an Action that an App recieves will be an object with attributes filled in via these parameters*/
