@@ -329,12 +329,12 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
                       <div></div> <!-- Dummy div element for QA-->
                       <div>
                         <input class="iframe-input input-height input-corner" placeholder="Enter message here." 
-                          name="helloText" id="helloText" oninput="inputChanged()" style="width: 50%;"/>
+                          name="helloTextStandalone" id="helloTextStandalone" oninput="inputChanged()" style="width: 50%;"/>
                         <button class="iframe-button" id="runButton" onclick="sayHello()" disabled
                           style="color: grey; border-color: grey;">Run</button>
                       </div>
                       <div>
-                        <textarea readonly class="server-response" placeholder="Response will be shown here." name="serverResponseMessage" id="serverResponseMessage"></textarea>
+                        <textarea readonly class="server-response" placeholder="Response will be shown here." name="serverResponseMessageStandalone" id="serverResponseMessageStandalone"></textarea>
                       </div>
               </div>
           </div>
@@ -401,7 +401,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
                 <div>
                   <input class="iframe-input input-height input-corner" placeholder="Enter message here." 
                     name="helloText" id="helloText" oninput="inputChanged()" style="width: 50%;"/>
-                  <button class="iframe-button" id="runButton" onclick="sayHello()" disabled
+                  <button class="iframe-button" id="runButton" onclick="sayHello()"
                     style="color: grey; border-color: grey;">Run</button>
                 </div>
                 <div>
