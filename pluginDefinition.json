@@ -16,7 +16,7 @@
     "isSingleWindowApp": true,
     "defaultWindowStyle": {
       "width": 800,
-      "height": 450,
+      "height": 650,
       "x": 200,
       "y": 50
     }

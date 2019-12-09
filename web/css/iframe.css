@@ -41,7 +41,13 @@
 
 .iframe-input {
   width: 100%;
-  padding-left: 5px;
+  margin: 4px 4px 4px 4px;
+  background-color: transparent;
+  border: 1px solid #047cc0;
+  border-radius: 2px !important;
+  font-size: 14px;
+  color: #2e2e2e;
+  padding: 5px 5px;
 }
 
 .input-corner {
@@ -52,13 +58,24 @@
   height: 20px;
 }
 
-.input-text {
+.iframe-button {
+  margin: 4px 4px 4px 4px;
+  font-weight: 700;
+  background-color: transparent;
+  border: 1px solid #047cc0;
+  border-radius: 2px;
+  font-size: 14px;
+  font-family: Helvetica, Open Sans, Arial, Lucida Grande, sans-serif;
+  color: #047cc0;
+  /* width: 100%; */
+  height: 2rem;
+  padding: 0 1rem;
 }
 
-.iframe-button {
-  border-radius: 4px;
-  margin: 0px 4px 0px 4px;
-  font-weight: 700;
+.iframe-button:hover {
+  cursor: pointer;
+  background-color: #175d8d;
+  color: #f6f6f6;
 }
 
 .right-align {
@@ -66,16 +83,9 @@
   padding-right: 50px;
 }
 
-.shadowed {
-  box-shadow: 3px 3px 10px;
-}
-
-.hide-it {
-  display: none;
-}
-
 .bottom-10 {
   margin-bottom: 10px;
+  padding: 5px;
 }
 
 .display-text {
@@ -84,23 +94,23 @@
   background-color: white;
   height: 18px;
   width: 96%;
+  border: 1px solid #047cc0;
+  border-radius: 2px !important;
+  padding: 4px;
 }
 
 .disable-effect {
   color: grey;
 }
 
-h1 {
-  text-align: center;
-}
-
 .server-response {
-  width: 100%;
+  width: 95%;
+  padding: 4px;
   height: 180px;
-}
-
-.test-panel {
-  padding: 5px 5px 5px 5px;
+  margin: 20px 4px 4px 4px;
+  background-color: transparent;
+  border: 1px solid #047cc0;
+  border-radius: 2px !important;
 }
 
 .test-panel-container {
@@ -109,12 +119,62 @@ h1 {
 }
 
 .plugin-test-panel {
-  border-right: outset;
   flex-grow: 1;
 }
 
-.dataservice-test-panel {
-  border-left: outset;
+/* Style the buttons that are used to open and close the iframe-accordion panel */
+.iframe-accordion {
+  background-color: #d6d6d6;
+  color: #000;
+  cursor: pointer;
+  padding: 10px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  outline: none;
+  transition: 0.9s;
+}
+
+.iframe-accordion:hover {
+  background-color: #d6d6d6;
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.active {
+  background-color: #eee;
+}
+
+/* Style the iframe-accordion panel. Note: hidden by default */
+.panel {
+  margin: 18px;
+  background-color: white;
+  max-height: 1;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+}
+
+.iframe-accordion:after {
+  content: '\002C4'; /* Unicode character for "down" sign (V) */
+  font-size: 14px;
+  color: #000;
+  float: right;
+  transform: scaleX(1.5);
+}
+
+.active:after {
+  content: "\002C5"; /* Unicode character for "up" sign (^) */
+}
+
+/* Force the scroll bar to be show in webkit browser (Mac hides by default) */
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0,0,0,.35);
+  -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
 }
 /*
   This program and the accompanying materials are
