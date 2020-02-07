@@ -14,14 +14,13 @@
    With ZLUX, there's a global called ZoweZLUX which holds useful tools. So, a site
    Can determine what actions to take by knowing if it is or isnt embedded in ZLUX via IFrame.
 */
-var mvdWindow = window.parent;
-var ZoweZLUX = null;
-if (mvdWindow) {
-  ZoweZLUX = mvdWindow.ZoweZLUX;
-}
+// var mvdWindow = window.parent;
+// var ZoweZLUX = null;
+// if (mvdWindow) {
+//   ZoweZLUX = mvdWindow.ZoweZLUX;
+// }
 
 const MY_PLUGIN_ID = 'org.zowe.zlux.sample.iframe';
-
 
 function SettingsService() {
   this.plugin = null;
@@ -31,9 +30,9 @@ SettingsService.prototype.setPlugin = function(plugin) {
   this.plugin = plugin;
 }
 
-SettingsService.prototype.getDefaultsFromServer = function(successCallback, errorCallback) {
+SettingsService.prototype.getDefaultsFromServer = async function(successCallback, errorCallback) {
   let xhr = new XMLHttpRequest();
-  let uri = ZoweZLUX.uriBroker.pluginConfigUri(this.plugin, 'requests/app', undefined);
+  let uri = await ZoweZLUX.uriBroker.pluginConfigUri(this.plugin, 'requests/app', undefined);
   xhr.open('GET', uri);
   xhr.onreadystatechange = function() {
     if (this.readyState == XMLHttpRequest.DONE) {
@@ -50,9 +49,9 @@ SettingsService.prototype.getDefaultsFromServer = function(successCallback, erro
   xhr.send();
 }
 
-SettingsService.prototype.saveAppRequest = function(actionType, targetMode, parameters, successCallback, errorCallback) {
+SettingsService.prototype.saveAppRequest = async function(actionType, targetMode, parameters, successCallback, errorCallback) {
   let xhr = new XMLHttpRequest();
-  let uri = ZoweZLUX.uriBroker.pluginConfigUri(this.plugin, 'requests/app', 'parameters');  
+  let uri = await ZoweZLUX.uriBroker.pluginConfigUri(this.plugin, 'requests/app', 'parameters');  
   xhr.open('PUT', uri, true);
   xhr.setRequestHeader('Content-Type', 'application/json');
   xhr.onreadystatechange = function() {
@@ -79,9 +78,9 @@ SettingsService.prototype.saveAppRequest = function(actionType, targetMode, para
 
 }
 
-SettingsService.prototype.saveAppId = function(appId, successCallback, errorCallback) {
+SettingsService.prototype.saveAppId = async function(appId, successCallback, errorCallback) {
   let xhr = new XMLHttpRequest();
-  let uri = ZoweZLUX.uriBroker.pluginConfigUri(this.plugin, 'requests/app', 'appid');
+  let uri = await ZoweZLUX.uriBroker.pluginConfigUri(this.plugin, 'requests/app', 'appid');
   xhr.open('PUT', uri, true);
   xhr.setRequestHeader('Content-Type', 'application/json');
   xhr.onreadystatechange = function() {
@@ -133,12 +132,20 @@ HelloService.prototype.sayHello = function(text, destination, callback) {
 var helloService = new HelloService();
 var settingsService = new SettingsService();
 if (ZoweZLUX) {
-  settingsService.setPlugin(ZoweZLUX.pluginManager.getPlugin(MY_PLUGIN_ID));
+  ZoweZLUX.pluginManager.getPlugin(MY_PLUGIN_ID).then(res => {
+    settingsService.setPlugin(res);
+  })
 }
 
 function getDefaultsFromServer() {
+  ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
+    if (value) { //If we are in single app mode...
+      console.error("This action is not supported yet in standalone mode.");
+      return;
+    }
+  });
   if (ZoweZLUX) {
-    console.log('IFrame is within MVD');
+    console.log('IFrame has ZoweZLUX global');
     settingsService.getDefaultsFromServer((resText)=> {
       try {
         let responseJson = JSON.parse(resText);
@@ -178,8 +185,14 @@ function getDefaultsFromServer() {
 };
 
 function saveToServer() {
+  ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
+    if (value) { //If we are in single app mode...
+      console.error("This action is not supported yet in standalone mode.");
+      return;
+    }
+  });
   if (ZoweZLUX) {
-    console.log('IFrame is within MVD');
+    console.log('IFrame has ZoweZLUX global');
     let actionTypes = document.getElementsByName('actionType');
     let type;
     for (let i =0; i < actionTypes.length; i++) {
@@ -215,16 +228,20 @@ function saveToServer() {
 function inputChanged() {
   if(document.getElementById('helloText').value) {
     document.getElementById('runButton').disabled = false;
+    document.getElementById('runButton').style.color = "#047cc0";
+    document.getElementById('runButton').style.borderColor = "#047cc0";
   } else {
     document.getElementById('runButton').disabled = true;
+    document.getElementById('runButton').style.color = "grey";
+    document.getElementById('runButton').style.borderColor = "grey";
   }
 }
 
-function sayHello() {
+async function sayHello() {
   if (ZoweZLUX) {
-    console.log('IFrame is within MVD');
-    let myPluginDef = ZoweZLUX.pluginManager.getPlugin(MY_PLUGIN_ID);
-    let url = ZoweZLUX.uriBroker.pluginRESTUri(myPluginDef, 'hello', null);
+    console.log('IFrame has ZoweZLUX global');
+    let myPluginDef = await ZoweZLUX.pluginManager.getPlugin(MY_PLUGIN_ID);
+    let url = await ZoweZLUX.uriBroker.pluginRESTUri(myPluginDef, 'hello', null);
     helloService.sayHello(document.getElementById('helloText').value, url, (resText) => {
     try {
       const responseJson = JSON.parse(resText);
@@ -251,7 +268,13 @@ function sayHello() {
 // Tests the sending of requests to other plugins. Invoked
 // by the button labelled "Send App Request"
 
-function sendAppRequest() {
+async function sendAppRequest() {
+  ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
+    if (value) { //If we are in single app mode...
+      console.error("This action is not supported yet in standalone mode.");
+      return;
+    }
+  });
   var requestText = document.getElementById('parameters').value;
   var parameters = null;
   /*Parameters for Actions could be a number, string, or object. The actual event context of an Action that an App recieves will be an object with attributes filled in via these parameters*/
@@ -268,13 +291,13 @@ function sendAppRequest() {
     let statusElement = document.getElementById('status');
     let message = '';
     if (ZoweZLUX) {
-      console.log((message = 'IFrame is within MVD'));
+      console.log('IFrame has ZoweZLUX global');
       /* PluginManager can be used to find what Plugins (Apps are a type of Plugin) are part of the current ZLUX instance.
          Once you know that the App you want is present, you can execute Actions on it by using the Dispatcher.
       */
       let dispatcher = ZoweZLUX.dispatcher;
       let pluginManager = ZoweZLUX.pluginManager;
-      let plugin = pluginManager.getPlugin(appId);
+      let plugin = await pluginManager.getPlugin(appId);
       if (plugin) {
         let actionTypes = document.getElementsByName('actionType');
         let type;
@@ -301,7 +324,7 @@ function sendAppRequest() {
           /*Actions can be made ahead of time, stored and registered at startup, but for example purposes we are making one on-the-fly.
             Actions are also typically associated with Recognizers, which execute an Action when a certain pattern is seen in the running App.
           */
-          let action = dispatcher.makeAction(actionID, actionTitle, mode,type,appId,argumentFormatter);
+          let action = await dispatcher.makeAction(actionID, actionTitle, mode,type,appId,argumentFormatter);
           let argumentData = {'data':(parameters ? parameters : requestText)};
           console.log((message = 'App request succeeded'));        
           statusElement.innerHTML = message;
@@ -319,9 +342,6 @@ function sendAppRequest() {
   }
 }
 
-window.addEventListener("load", function () {
-  console.log('Sample iframe app has loaded');
-}, false);
 
 
 /*
