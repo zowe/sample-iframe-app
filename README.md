@@ -13,7 +13,7 @@ Content within an IFrame interacts with content in a webpage differently than co
 
 This app presents a few fields which allow you to launch another App, or communicate with an already open App instance, in both cases with some context that the other App may interpret and some action.
 
-**Note: This App requires the [Sample Angular App](https://github.com/zowe/sample-angular-app) to be installed.**
+**Note: This App requires the [Sample Angular App](https://github.com/zowe/sample-angular-app) to be installed, because it imports the dataservice from the Angular App for example purposes. [Read more about import here](https://github.com/zowe/zlux/wiki/ZLUX-Dataservices)**
 
 **To request features or report bugs, please use the issues page at the [zlux repo](https://github.com/zowe/zlux/issues) with the sample-app or app tags**
 
