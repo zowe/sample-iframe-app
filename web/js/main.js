@@ -235,6 +235,16 @@ function inputChanged() {
     document.getElementById('runButton').style.color = "grey";
     document.getElementById('runButton').style.borderColor = "grey";
   }
+
+  if(document.getElementById('helloTextStandalone').value) {
+    document.getElementById('runButtonStandalone').disabled = false;
+    document.getElementById('runButtonStandalone').style.color = "#047cc0";
+    document.getElementById('runButtonStandalone').style.borderColor = "#047cc0";
+  } else {
+    document.getElementById('runButtonStandalone').disabled = true;
+    document.getElementById('runButtonStandalone').style.color = "grey";
+    document.getElementById('runButtonStandalone').style.borderColor = "grey";
+  }
 }
 
 async function sayHello() {
