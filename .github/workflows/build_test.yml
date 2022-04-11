@@ -20,7 +20,6 @@ on:
         type: boolean
         description: 'Perform release, Defauls is false'
         required: false
-        default: false
 
 jobs:
   check-permission:
