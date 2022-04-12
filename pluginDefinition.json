@@ -1,8 +1,10 @@
 {
   "identifier": "org.zowe.zlux.sample.iframe",
-  "apiVersion": "1.0.0",
-  "pluginVersion": "1.1.0",
+  "apiVersion": "2.0.0",
+  "pluginVersion": "1.2.0",
   "license": "EPL-2.0",
+  "author": "Zowe",
+  "homepage": "https://github.com/zowe/sample-iframe-app",
   "pluginType": "application",
   "webContent": {
     "framework": "iframe",
@@ -15,7 +17,6 @@
     "descriptionKey": "Sample App Showcasing IFrame Adapter",
     "descriptionDefault": "Sample App Showcasing IFrame Adapter",
     "startingPage": "html/index.html",
-    "isSingleWindowApp": true,
     "defaultWindowStyle": {
       "width": 800,
       "height": 650
