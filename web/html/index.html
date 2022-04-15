@@ -33,6 +33,9 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
     <script>
       let notifications = [];
       let windowTitle = "Iframe Sample";
+      let SAMPLE_IFRAME_EXAMPLE_CONTEXT = {
+        exampleProp: "test"
+      };
 
       function handleMessageAdded(message){
         notifications.unshift(message);
@@ -192,6 +195,28 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
         sublogger.trace('trace log');
       }
 
+      async function testDispatcher(){
+        SAMPLE_IFRAME_EXAMPLE_CONTEXT = {
+          exampleProp: "Adapter"
+        }
+        let newAction = {
+          "id":"zowe.iframe.test.action",
+          "defaultName":"Example 2",
+          "type":"Launch",
+          "targetMode":"PluginCreate",
+          "targetId":"org.zowe.zlux.sample.iframe",
+          "arg": {},
+          "primaryArgument": {}
+        }
+        let makeActionRes = await ZoweZLUX.dispatcher.makeActionFromObject(newAction);
+        console.log("makeActionFromObject res: ", makeActionRes);
+        let registerAbsActionRes = await ZoweZLUX.dispatcher.registerAbstractAction(makeActionRes);
+        let exampleAction = await ZoweZLUX.dispatcher.getAbstractActionById("zowe.iframe.test.action");
+        let actions = await ZoweZLUX.dispatcher.getAbstractActions(null, SAMPLE_IFRAME_EXAMPLE_CONTEXT);
+        console.log("getAbstractActionById(\"zowe.iframe.test.action\"): ", exampleAction);
+        console.log("iFrame getAbstractActions: ", actions);
+      }
+
       async function testWindowTitle(){
         if (windowTitle == 'Iframe Sample') {
           await windowActions.setTitle('Iframe Sample (title changed)');
@@ -232,6 +257,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
         testNotificationManager();
         testWindowActions(event);
         testZoweZLUXExists();
+        testDispatcher();
       }
 
       function iframeLoaded() {
@@ -306,7 +332,6 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
                 <br></br>
                 <button id="SIA_DesktopComp_Notifications" class="iframe-button" type="button" onclick="testNotification()">Send a notification</button>
                 <button id="SIA_DesktopComp_ContextMenu" class="iframe-button" type="button" onclick="testContextMenu(event)">Spawn a context menu</button>
-            
               </div>
               <div class="iframe-single-app-mode" style="display: none">
                 <br></br>
