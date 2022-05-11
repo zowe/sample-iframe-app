@@ -162,6 +162,11 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
           {
             text: "Action 1 - Don't click me",
             action: contextMenuAction1
+          },
+          {
+            text: "Action 3 - Disabled action",
+            action: contextMenuAction1,
+            disabled: true
           }
         ], false)
       }
@@ -330,8 +335,8 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
                 <br></br>
                   <span class="bold-text">Desktop Components: </span>
                 <br></br>
-                <button class="iframe-button" type="button" onclick="testNotification()">Send a notification</button>
-                <button class="iframe-button" type="button" onclick="testContextMenu(event)">Spawn a context menu</button>
+                <button id="SIA_DesktopComp_Notifications" class="iframe-button" type="button" onclick="testNotification()">Send a notification</button>
+                <button id="SIA_DesktopComp_ContextMenu" class="iframe-button" type="button" onclick="testContextMenu(event)">Spawn a context menu</button>
               </div>
               <div class="iframe-single-app-mode" style="display: none">
                 <br></br>
@@ -355,7 +360,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
                       <div>
                         <input class="iframe-input input-height input-corner" placeholder="Enter message here." 
                           name="helloTextStandalone" id="helloTextStandalone" oninput="inputChanged()" style="width: 50%;"/>
-                        <button class="iframe-button" id="runButton" onclick="sayHello()" disabled
+                        <button class="iframe-button" id="runButtonStandalone" onclick="sayHello()" disabled
                           style="color: grey; border-color: grey;">Run</button>
                       </div>
                       <div>
