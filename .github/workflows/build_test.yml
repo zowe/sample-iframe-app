@@ -1,4 +1,4 @@
-name: Build sample-react-app workflow
+name: Build sample-iframe-app workflow
 on:
   push:
     branches:
@@ -78,7 +78,7 @@ jobs:
         with:
           pax-ssh-username: ${{ secrets.SSH_MARIST_USERNAME }}
           pax-ssh-password: ${{ secrets.SSH_MARIST_RACF_PASSWORD }}
-          pax-name: sample-react-app
+          pax-name: sample-iframe-app
 
       - name: '[Prep 8] deploy '
         uses: zowe-actions/zlux-builds/deploy-pax@main
