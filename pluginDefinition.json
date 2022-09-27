@@ -1,7 +1,7 @@
 {
   "identifier": "org.zowe.zlux.sample.iframe",
   "apiVersion": "2.0.0",
-  "pluginVersion": "1.2.0",
+  "pluginVersion": "1.2.1",
   "license": "EPL-2.0",
   "author": "Zowe",
   "homepage": "https://github.com/zowe/sample-iframe-app",
