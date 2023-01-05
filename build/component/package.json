@@ -1,0 +1,22 @@
+{
+    "name": "iframe-sample",
+    "version": "2.6.0",
+    "description": "Sample app Showcasing Iframe Adapter",
+    "main": "iframe-sample.pax",
+    "homepgae": "https://zowe.org",
+    "keywords": [
+        "zlux",
+        "appfw",
+        "app",
+        "iframe",
+        "sample"
+    ],
+    "license": "EPL-2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/zowe/sample-iframe-app.git"
+    },
+	"dependencies": {
+		"angular-sample": "^2.0.0"
+	}
+}
