@@ -101,3 +101,9 @@ jobs:
       - name: '[Prep 10] Publish NPM Package  '
         if: ${{ github.event.inputs.PERFORM_RELEASE == 'true' && env.RELEASE == 'true' }}
         uses: zowe-actions/zlux-builds/plugins/npm-publish@v2.x/main
+        
+      - name: '[Prep 11] Bump Staging Version '
+        if: ${{ github.event.inputs.PERFORM_RELEASE == 'true' && env.RELEASE == 'true' }}
+        uses: zowe-actions/zlux-builds/plugins/bump-version@v2.x/main
+        env: 
+         GITHUB_TOKEN: ${{ secrets.ZOWE_ROBOT_TOKEN }}
