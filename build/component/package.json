@@ -1,5 +1,5 @@
 {
-    "name": "iframe-sample",
+    "name": "@zowe/iframe-sample",
     "version": "2.8.0",
     "description": "Sample app Showcasing Iframe Adapter",
     "main": "iframe-sample.pax",
