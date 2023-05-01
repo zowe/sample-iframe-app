@@ -1,6 +1,6 @@
 {
     "name": "iframe-sample",
-    "version": "2.8.0",
+    "version": "2.9.0",
     "description": "Sample app Showcasing Iframe Adapter",
     "main": "iframe-sample.pax",
     "homepgae": "https://zowe.org",
