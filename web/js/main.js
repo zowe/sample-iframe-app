@@ -138,14 +138,15 @@ if (ZoweZLUX) {
 }
 
 function getDefaultsFromServer() {
-  ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
+  ZoweZLUX.iframe.isSingleAppModeSimple().then(function(value) {
     if (value) { //If we are in single app mode...
-      console.error("This action is not supported yet in standalone mode.");
+      console.error("This action is not supported in simple standalone mode. Did you mean to use MVD windowManager?");
       return;
     }
   });
   if (ZoweZLUX) {
     console.log('IFrame has ZoweZLUX global');
+    // TODO: This appears to have regressed
     settingsService.getDefaultsFromServer((resText)=> {
       try {
         let responseJson = JSON.parse(resText);
@@ -185,9 +186,9 @@ function getDefaultsFromServer() {
 };
 
 function saveToServer() {
-  ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
+  ZoweZLUX.iframe.isSingleAppModeSimple().then(function(value) {
     if (value) { //If we are in single app mode...
-      console.error("This action is not supported yet in standalone mode.");
+      console.error("This action is not supported in simple standalone mode. Did you mean to use MVD windowManager?");
       return;
     }
   });
@@ -226,39 +227,55 @@ function saveToServer() {
 };
 
 function inputChanged() {
-  if(document.getElementById('helloText').value) {
-    document.getElementById('runButton').disabled = false;
-    document.getElementById('runButton').style.color = "#047cc0";
-    document.getElementById('runButton').style.borderColor = "#047cc0";
-  } else {
-    document.getElementById('runButton').disabled = true;
-    document.getElementById('runButton').style.color = "grey";
-    document.getElementById('runButton').style.borderColor = "grey";
-  }
+  let buttonName = 'runButton';
+  let textName = 'helloText';
+  ZoweZLUX.iframe.isSingleAppModeSimple().then(function(value) {
+    if (value) { //If we are in single app mode...
+      buttonName += 'NonSimple';
+      textName += 'NonSimple';
+    }
+    if(document.getElementById(textName).value) {
+      document.getElementById(buttonName).disabled = false;
+      document.getElementById(buttonName).style.color = "#047cc0";
+      document.getElementById(buttonName).style.borderColor = "#047cc0";
+    } else {
+      document.getElementById(buttonName).disabled = true;
+      document.getElementById(buttonName).style.color = "grey";
+      document.getElementById(buttonName).style.borderColor = "grey";
+    }
+  });
 }
 
 async function sayHello() {
   if (ZoweZLUX) {
+    let responseName = 'serverResponseMessage';
+    let textName = 'helloText';
+    ZoweZLUX.iframe.isSingleAppModeSimple().then(function(value) {
+      if (value) { //If we are in single app mode...
+        responseName += 'NonSimple';
+        textName += 'NonSimple';
+      }
+    });
     console.log('IFrame has ZoweZLUX global');
     let myPluginDef = await ZoweZLUX.pluginManager.getPlugin(MY_PLUGIN_ID);
     let url = await ZoweZLUX.uriBroker.pluginRESTUri(myPluginDef, 'hello', null);
-    helloService.sayHello(document.getElementById('helloText').value, url, (resText) => {
-    try {
-      const responseJson = JSON.parse(resText);
-      let serverResponseMessage = document.getElementById('serverResponseMessage');
-      if (responseJson != null && responseJson.serverResponse != null) {
-        serverResponseMessage.innerHTML = 
-          `Server replied with 
-        
-        "${responseJson.serverResponse}"`;
-      } else {
-        serverResponseMessage.innerHTML = "<Empty Reply from Server>";
+    helloService.sayHello(document.getElementById(textName).value, url, (resText) => {
+      try {
+        const responseJson = JSON.parse(resText);
+        let serverResponseMessage = document.getElementById(responseName);
+        if (responseJson != null && responseJson.serverResponse != null) {
+          serverResponseMessage.innerHTML = 
+            `Server replied with 
+          
+          "${responseJson.serverResponse}"`;
+        } else {
+          serverResponseMessage.innerHTML = "<Empty Reply from Server>";
+        }
+        console.log(responseJson);
+      } catch (e) {
+        console.log(`Failed to parse response json. Received response text=${resText}`);
       }
-      console.log(responseJson);
-    } catch (e) {
-      console.log(`Failed to parse response json. Received response text=${resText}`);
-    }
-  });
+    });
   } else {
     let serverResponseMessage = document.getElementById('serverResponseMessage');
     console.log((serverResponseMessage.innerHTML = "Not inside of Zowe, and not sure how to contact dataservice"));
@@ -269,9 +286,9 @@ async function sayHello() {
 // by the button labelled "Send App Request"
 
 async function sendAppRequest() {
-  ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
+  ZoweZLUX.iframe.isSingleAppModeSimple().then(function(value) {
     if (value) { //If we are in single app mode...
-      console.error("This action is not supported yet in standalone mode.");
+      console.error("This action is not supported in simple standalone mode. Did you mean to use MVD windowManager?");
       return;
     }
   });

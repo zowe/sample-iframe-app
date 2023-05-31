@@ -73,9 +73,9 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       }
       
       async function testNotificationManager(){
-        ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
+        ZoweZLUX.iframe.isSingleAppModeSimple().then(function(value) {
           if (value) { //If we are in single app mode...
-            console.error("Testing notification manager is not yet supported in standalone mode.");
+            console.error("Testing notification manager is not supported in simple standalone mode. Did you mean to use MVD windowManager?");
             return;
           }
         });
@@ -98,9 +98,9 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       }
 
       async function testNotification() {
-        ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
+        ZoweZLUX.iframe.isSingleAppModeSimple().then(function(value) {
           if (value) { //If we are in single app mode...
-            console.error("Sending notifications is not yet supported in standalone mode.");
+            console.error("Sending notifications is not supported in simple standalone mode. Did you mean to use MVD windowManager?");
             return;
           }
         });
@@ -109,9 +109,9 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       }
 
       async function testGlobalization(){
-        ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
+        ZoweZLUX.iframe.isSingleAppModeSimple().then(function(value) {
           if (value) { //If we are in single app mode...
-            console.error("Testing globalization is not yet supported in standalone mode.");
+            console.error("Testing globalization (languages) is not supported in simple standalone mode. Did you mean to use MVD windowManager?");
             return;
           }
         });
@@ -167,7 +167,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       }
 
       async function testWindowActions(event){
-        ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
+        ZoweZLUX.iframe.isSingleAppModeSimple().then(function(value) {
           if (value) { //If we are in single app mode...
             console.error("Testing window actions is not supported in standalone mode.");
             return;
@@ -219,11 +219,13 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
 
       async function testWindowTitle(){
         if (windowTitle == 'Iframe Sample') {
-          await windowActions.setTitle('Iframe Sample (title changed)');
-          windowTitle = 'Iframe Sample (title changed)';
+          windowTitle = 'NEW! Iframe Sample';
+          await windowActions.setTitle(windowTitle);
+          console.log("Window title changed to " + windowTitle);
         } else {
-          await windowActions.setTitle('Iframe Sample');
           windowTitle = 'Iframe Sample';
+          await windowActions.setTitle(windowTitle);
+          console.log("Window title changed back to " + windowTitle);
         }
       }
 
@@ -281,17 +283,31 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
           });
         }
 
-        ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
+        let windowManager = "MVD";
+        ZoweZLUX.iframe.isSingleAppModeSimple().then(function(value) {
           if (value) { //If we are in single app mode...
-            var elem = document.getElementsByClassName("iframe-single-app-mode");
+            var elem = document.getElementsByClassName("iframe-simple-mode");
             for (i = 0; i < elem.length; i++) {
               elem[i].style.display = "unset";
             }
+            windowManager = "simple";
           } else { //If we are in regular desktop mode...
-            var elem = document.getElementsByClassName("iframe-desktop-mode");
+            var elem = document.getElementsByClassName("iframe-mvd-mode");
             for (i = 0; i < elem.length; i++) {
               elem[i].style.display = "unset";
             }
+          }
+        });
+        
+        ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
+          if (value) {
+            if (windowManager == "MVD") {
+              console.log("Iframe Sample App is in single app mode with the MVD window manager (retains core Zowe functions)");
+            } else if (windowManager == "simple") {
+              console.log("Iframe Sample App is in single app mode with the simple window manager")
+            }
+          } else {
+            console.log("Iframe Sample App is not in single app mode")
           }
         });
       };
@@ -316,7 +332,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
               <button class="iframe-button" type="button" onclick="getDefaultsFromServer()">Get metadata from Server</button>
               <button class="iframe-button" type="button" onclick="saveToServer()">Save metadata to Server</button>
 
-              <div class="iframe-desktop-mode" style="display: none;">
+              <div class="iframe-mvd-mode" style="display: none;">
                 <br></br>
                   <span class="bold-text">Window Events: </span>
                 <br></br>
@@ -333,7 +349,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
                 <button class="iframe-button" type="button" onclick="testNotification()">Send a notification</button>
                 <button class="iframe-button" type="button" onclick="testContextMenu(event)">Spawn a context menu</button>
               </div>
-              <div class="iframe-single-app-mode" style="display: none">
+              <div class="iframe-simple-mode" style="display: none">
                 <br></br>
                   <span class="bold-text">Window Events unavailable (viewing in standalone mode) </span>
                 <br></br>
@@ -343,28 +359,28 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
 
               </div>
           
-          <div class="iframe-single-app-mode" style="display: none">
+          <div class="iframe-simple-mode" style="display: none">
             <button class="iframe-accordion bold-text">App to App interaction unavailable (viewing in standalone mode)</button>
             
             <br></br>
             <br></br>
 
-            <button class="iframe-accordion bold-text">Dataservice Request test: (not implemented yet in standalone mode)</button>
+            <button class="iframe-accordion bold-text">Dataservice Request test: </button>
               <div class="panel dataservice-test-panel">
                       <div></div> <!-- Dummy div element for QA-->
                       <div>
                         <input class="iframe-input input-height input-corner" placeholder="Enter message here." 
-                          name="helloTextStandalone" id="helloTextStandalone" oninput="inputChanged()" style="width: 50%;"/>
-                        <button class="iframe-button" id="runButton" onclick="sayHello()" disabled
+                          name="helloTextNonSimple" id="helloTextNonSimple" oninput="inputChanged()" style="width: 50%;"/>
+                        <button class="iframe-button" id="runButtonNonSimple" onclick="sayHello()"
                           style="color: grey; border-color: grey;">Run</button>
                       </div>
                       <div>
-                        <textarea readonly class="server-response" placeholder="Response will be shown here." name="serverResponseMessageStandalone" id="serverResponseMessageStandalone"></textarea>
+                        <textarea readonly class="server-response" placeholder="Response will be shown here." name="serverResponseMessageNonSimple" id="serverResponseMessageNonSimple"></textarea>
                       </div>
               </div>
           </div>
 
-          <div class="iframe-desktop-mode" style="display: none">
+          <div class="iframe-mvd-mode" style="display: none">
             <button class="iframe-accordion bold-text">App to App interaction:</button>
             <div class="panel">
                 <span class="bold-text">Application Identifier: </span>
