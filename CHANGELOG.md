@@ -3,7 +3,6 @@
 All notable changes to the sample iframe app will be documented in this file.
 
 ## 1.2.1
-
 - Bugfix: Schema file was not included, preventing installation as a component
 - Bugfix: Manifest build content template was never resolved, so it has been removed.
 
