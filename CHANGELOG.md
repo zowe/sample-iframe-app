@@ -4,7 +4,6 @@ All notable changes to the sample iframe app will be documented in this file.
 
 ## 1.2.1
 
-- Small update in changelog action, it will check and update changelog when its a PR, Currently some builds show that they are failing because of the changelog, the changelog logic shouldn't run unless if its a pull request.
 - Bugfix: Schema file was not included, preventing installation as a component
 - Bugfix: Manifest build content template was never resolved, so it has been removed.
 
