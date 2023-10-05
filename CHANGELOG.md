@@ -1,6 +1,6 @@
 # Sample iframe app Changelog
 
-All notable changes to the sample iframe app will be documented in this file. 
+All notable changes to the sample iframe app will be documented in this file.
 
 ## 1.2.1
 
