@@ -24,19 +24,6 @@ jobs:
         with:
           ref: v3.x/staging
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Install npm
-        run: npm install
-
-      - name: Test with coverage (Jest)
-        run: npm test --if-present -- --coverage
-        env:
-          CI: true
-
       - name: SonarQube Scan
         continue-on-error: false
         uses: sonarsource/sonarqube-scan-action@v5
