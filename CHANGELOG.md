@@ -2,7 +2,7 @@
 
 All notable changes to the sample iframe app will be documented in this file.
 
-## 2.8.1
+## 3.1.1
 
 - Bugfix: Generate build information in manifest.
 
