@@ -2,6 +2,11 @@
 
 All notable changes to the sample iframe app will be documented in this file.
 
+
+## 2.18.6
+
+- Bugfix: Change app2app example to tn3270 with a TLS connection to foster responsible use ([#51](https://github.com/zowe/sample-iframe-app/pull/51))
+
 ## 1.2.1
 
 - Bugfix: Schema file was not included, preventing installation as a component
